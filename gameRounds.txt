@@ -1,0 +1,17 @@
+   const gameRounds = [
+                {
+                    image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/Hitler_portrait_crop.jpg/960px-Hitler_portrait_crop.jpg',
+                    answers: ['Adolf Hitler', 'hitler'],
+                    hint: 'Tiene un bigote muy chistoso.'
+                },
+                {
+                    image: 'https://www.tedxpuravida.org/wp-content/uploads/2022/09/edgarsilva-200x200.jpg',
+                    answers: ['edgar', 'silva'],
+                    hint: 'Futuro presidente.'
+                },
+                {
+                    image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/00/Charlie_Chaplin.jpg/800px-Charlie_Chaplin.jpg',
+                    answers: ['charlie chaplin', 'chaplin', 'charles chaplin'],
+                    hint: 'Una estrella del cine mudo.'
+                }
+            ];
