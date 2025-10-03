@@ -59,8 +59,8 @@
             justify-content: space-between;
             font-size: 1.2em;
             font-weight: 700;
+            margin-bottom: 20px;
             padding: 0 10px;
-            /* Se quita el margin-bottom para que space-between haga su trabajo */
         }
         
         #info-puntos { color: var(--color-verde); }
@@ -70,20 +70,25 @@
             position: relative;
             width: 90%;
             aspect-ratio: 4 / 3;
-            margin: 10px auto; /* Añade un pequeño margen vertical */
+            margin: 0 auto;
             background-color: #eee;
             border-radius: 10px;
             border: 3px solid #bdc3c7;
         }
 
         #character-image {
-            width: 100%; height: 100%;
-            object-fit: cover; border-radius: 7px;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 7px;
         }
 
         #cover-grid {
-            position: absolute; top: 0; left: 0;
-            width: 100%; height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             display: grid;
             grid-template-columns: repeat(10, 1fr);
             grid-template-rows: repeat(8, 1fr);
@@ -94,10 +99,12 @@
             background-color: var(--color-azul);
             transition: opacity 0.7s ease, transform 0.7s ease;
         }
+        
         .cover-tile.revealed { opacity: 0; transform: scale(0.5); }
         
         .hexagon {
-            position: absolute; width: 60px; height: 68px;
+            position: absolute;
+            width: 60px; height: 68px;
             background-color: var(--color-rojo);
             clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
             display: flex; justify-content: center; align-items: center;
@@ -113,13 +120,13 @@
         .hexagon::after { margin-left: 12px; }
         
         #h1 { background-color: var(--color-rojo); top: 15%; left: -20px; }
-        #h2 { background-color: var(--color-verde); top: 35%; left: 0px; animation-delay: -1s; width: 50px; height: 56px;}
-        #h3 { background-color: var(--color-azul); top: 25%; right: -15px; animation-delay: -2s; }
+        #h2 { background-color: var(--color-verde); top: 45%; left: 0px; animation-delay: -1s; width: 50px; height: 56px;}
+        #h3 { background-color: var(--color-azul); top: 30%; right: -15px; animation-delay: -2s; }
         #h4 { background-color: var(--color-amarillo); top: 15%; right: 10px; animation-delay: -3s; width: 45px; height: 50px; }
         
         #host {
             background-color: var(--color-naranja);
-            top: 55%; left: 15%; width: 80px; height: 92px; z-index: 10;
+            top: 60%; left: 15%; width: 80px; height: 92px; z-index: 10;
         }
         
         #host::before, #host::after {
@@ -145,7 +152,7 @@
         .host-bowtie::after { border-width: 8px 14px 8px 0; border-color: transparent black transparent transparent; left: 100%; }
 
         #speech-bubble {
-            position: absolute; top: 45%; left: 45%;
+            position: absolute; top: 50%; left: 45%;
             background-color: white; padding: 15px; border-radius: 20px;
             border: 3px solid black; font-size: 1em; font-weight: 600;
             max-width: 160px; text-align: center; opacity: 0; visibility: hidden;
@@ -159,19 +166,21 @@
             margin-left: -11px; margin-bottom: -11px;
         }
 
-        /* CAMBIO: EL FORMULARIO AHORA ES EL CONTENEDOR DEL ÁREA DE RESPUESTA */
         #answer-form {
-            display: flex;
-            flex-direction: column;
-            gap: 10px; /* Espacio entre input, teclado y botón */
+            padding-bottom: 20px; display: flex;
+            flex-direction: column; gap: 10px; z-index: 5; /* Asegura que esté sobre el público */
         }
         
         #answer-input {
-            width: 100%; padding: 12px; border-radius: 10px;
+            width: 100%; padding: 15px; border-radius: 10px;
             border: 3px solid #bdc3c7; font-size: 1.2em; text-align: center;
             font-family: 'Quicksand', sans-serif; font-weight: 700;
-            outline: none; background-color: white;
-            min-height: 50px; /* Asegura una altura mínima */
+            outline: none; transition: border-color 0.3s, box-shadow 0.3s;
+            background-color: white; /* Para que no parezca deshabilitado */
+        }
+        #answer-input:focus {
+            border-color: var(--color-naranja);
+            box-shadow: 0 0 10px rgba(243, 156, 18, 0.5);
         }
         
         #guess-button {
@@ -180,49 +189,19 @@
             border: none; border-radius: 10px; cursor: pointer;
             transition: background-color 0.3s, transform 0.1s;
         }
+        #guess-button:hover { background-color: #e67e22; }
         #guess-button:active { transform: scale(0.98); }
         #guess-button:disabled { background-color: #bdc3c7; cursor: not-allowed; }
 
         .shake { animation: shake 0.5s; }
 
-        /* CAMBIO: ESTILOS SIMPLIFICADOS PARA TECLADO SIEMPRE VISIBLE */
-        #custom-keyboard {
-            padding: 5px;
-            background-color: #e0e4e8;
-            border-radius: 10px;
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-
-        .keyboard-row {
-            display: flex;
-            justify-content: center;
-            gap: 5px;
-        }
-
-        .keyboard-key {
-            flex: 1;
-            padding: 10px 0;
-            font-size: 1.1em;
-            font-family: 'Quicksand', sans-serif;
-            font-weight: 600;
-            border: none;
-            background-color: #fff;
-            border-radius: 6px;
-            box-shadow: 0 2px 2px rgba(0,0,0,0.1);
-            cursor: pointer;
-            -webkit-tap-highlight-color: transparent;
-        }
-        .keyboard-key:active { background-color: #d1d5db; transform: scale(0.98); }
-        .key-special { flex: 1.5; background-color: #adb5bd; color: white; font-weight: 700; }
-        
         #end-game-screen {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: rgba(44, 62, 80, 0.95); color: white;
-            display: flex; flex-direction: column; justify-content: center;
-            align-items: center; z-index: 100; text-align: center;
-            opacity: 0; visibility: hidden; transition: opacity 0.5s ease; padding: 20px;
+            position: absolute; top: 0; left: 0;
+            width: 100%; height: 100%; background-color: rgba(44, 62, 80, 0.95);
+            color: white; display: flex; flex-direction: column;
+            justify-content: center; align-items: center; z-index: 100;
+            text-align: center; opacity: 0; visibility: hidden;
+            transition: opacity 0.5s ease; padding: 20px;
         }
         #end-game-screen.visible { opacity: 1; visibility: visible; }
         #end-game-screen h2 { font-size: 2.5em; margin-bottom: 10px; }
@@ -234,9 +213,74 @@
             font-weight: 700; transition: background-color 0.3s;
         }
         #restart-button:hover { background-color: #e67e22; }
+        
+        /* --- NUEVOS ESTILOS PARA EL TECLADO PERSONALIZADO --- */
+        #custom-keyboard {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 10px;
+            background-color: #e0e4e8;
+            border-top: 2px solid #bdc3c7;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            z-index: 50;
+            transform: translateY(100%);
+            visibility: hidden;
+            transition: transform 0.3s ease-out, visibility 0.3s ease-out;
+        }
 
-        @keyframes float { 0% {transform: translateY(0px);} 50% {transform: translateY(-10px);} 100% {transform: translateY(0px);} }
-        @keyframes shake { 0%, 100% {transform: translateX(0);} 25% {transform: translateX(-5px);} 75% {transform: translateX(5px);} }
+        #custom-keyboard.visible {
+            transform: translateY(0);
+            visibility: visible;
+        }
+
+        .keyboard-row {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .keyboard-key {
+            flex: 1;
+            padding: 12px 0;
+            font-size: 1.1em;
+            font-family: 'Quicksand', sans-serif;
+            font-weight: 600;
+            border: none;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 2px rgba(0,0,0,0.1);
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent; /* Evita el resalte azul en móviles */
+        }
+
+        .keyboard-key:active {
+            background-color: #d1d5db;
+            transform: scale(0.98);
+        }
+
+        .key-special {
+            flex: 1.5;
+            background-color: #adb5bd;
+            color: white;
+            font-weight: 700;
+        }
+        /* --- FIN ESTILOS TECLADO --- */
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        @keyframes shake {
+          0%, 100% { transform: translateX(0); }
+          25% { transform: translateX(-5px); }
+          75% { transform: translateX(5px); }
+        }
     </style>
 </head>
 <body>
@@ -265,12 +309,9 @@
             <p id="hint-text"></p>
         </div>
         
-        <!-- CAMBIO: EL FORMULARIO AHORA CONTIENE TODO (INPUT, TECLADO, BOTÓN) -->
         <form id="answer-form">
-            <input type="text" id="answer-input" placeholder="Tu respuesta aparecerá aquí" autocomplete="off" readonly>
-            
-            <div id="custom-keyboard"></div>
-            
+            <!-- INPUT CAMBIADO A READONLY PARA USAR EL TECLADO PERSONALIZADO -->
+            <input type="text" id="answer-input" placeholder="Toca aquí para escribir" autocomplete="off" readonly>
             <button type="submit" id="guess-button">Adivinar</button>
         </form>
 
@@ -279,27 +320,51 @@
             <p id="final-score"></p>
             <button id="restart-button">Jugar de Nuevo</button>
         </div>
+
+        <!-- CONTENEDOR PARA EL TECLADO PERSONALIZADO -->
+        <div id="custom-keyboard"></div>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
 
             const gameRounds = [
-                { image: 'https://i.blogs.es/ceda9c/super-mario-bros-la-pelicula/1366_2000.jpeg', answers: ['mario', 'mario bros', 'super mario'], hint: 'Es un fontanero italiano que rescata princesas.' },
-                { image: 'https://www.latercera.com/resizer/CBkQd2uQ9j2J3VdnL2Q0e5j4SbY=/900x600/smart/cloudfront-us-east-1.images.arcpublishing.com/copesa/J7WSP2QOMBG5JIQ52Y7ZU3Z5CE.jpg', answers: ['pikachu'], hint: 'Es un ratón eléctrico amarillo, ¡muy famoso!' },
-                { image: 'https://hips.hearstapps.com/hmg-prod/images/b esponja-1557323530.jpg', answers: ['bob esponja', 'spongebob'], hint: 'Vive en una piña debajo del mar.' }
+                {
+                    image: 'https://i.blogs.es/ceda9c/super-mario-bros-la-pelicula/1366_2000.jpeg',
+                    answers: ['mario', 'mario bros', 'super mario'],
+                    hint: 'Es un fontanero italiano que rescata princesas.'
+                },
+                {
+                    image: 'https://www.latercera.com/resizer/CBkQd2uQ9j2J3VdnL2Q0e5j4SbY=/900x600/smart/cloudfront-us-east-1.images.arcpublishing.com/copesa/J7WSP2QOMBG5JIQ52Y7ZU3Z5CE.jpg',
+                    answers: ['pikachu'],
+                    hint: 'Es un ratón eléctrico amarillo, ¡muy famoso!'
+                },
+                {
+                    image: 'https://hips.hearstapps.com/hmg-prod/images/b esponja-1557323530.jpg',
+                    answers: ['bob esponja', 'spongebob'],
+                    hint: 'Vive en una piña debajo del mar.'
+                }
             ];
 
             let currentRound = 0, score = 0, correctAnswersCount = 0;
             let timer = 50, timerInterval, tiles = [], isButtonOnCooldown = false;
             
-            const infoTiempoEl = document.getElementById('info-tiempo'), infoPuntosEl = document.getElementById('info-puntos');
-            const characterImageEl = document.getElementById('character-image'), coverGridEl = document.getElementById('cover-grid');
-            const answerFormEl = document.getElementById('answer-form'), answerInputEl = document.getElementById('answer-input');
-            const speechBubbleEl = document.getElementById('speech-bubble'), hintTextEl = document.getElementById('hint-text');
-            const endGameScreenEl = document.getElementById('end-game-screen'), finalScoreEl = document.getElementById('final-score');
-            const restartButtonEl = document.getElementById('restart-button'), guessButtonEl = document.getElementById('guess-button');
+            const infoTiempoEl = document.getElementById('info-tiempo');
+            const infoPuntosEl = document.getElementById('info-puntos');
+            const characterImageEl = document.getElementById('character-image');
+            const coverGridEl = document.getElementById('cover-grid');
+            const answerFormEl = document.getElementById('answer-form');
+            const answerInputEl = document.getElementById('answer-input');
+            const speechBubbleEl = document.getElementById('speech-bubble');
+            const hintTextEl = document.getElementById('hint-text');
+            const endGameScreenEl = document.getElementById('end-game-screen');
+            const finalScoreEl = document.getElementById('final-score');
+            const restartButtonEl = document.getElementById('restart-button');
+            const guessButtonEl = document.getElementById('guess-button');
+            // NUEVA REFERENCIA AL TECLADO
             const customKeyboardEl = document.getElementById('custom-keyboard');
+
+            // --- LÓGICA DEL TECLADO PERSONALIZADO ---
 
             function createKeyboard() {
                 const keysLayout = [
@@ -309,18 +374,28 @@
                     ['Z', 'X', 'C', 'V', 'B', 'N', 'M'],
                     ['SPACE', 'BKSP']
                 ];
+
                 keysLayout.forEach(row => {
                     const rowEl = document.createElement('div');
                     rowEl.classList.add('keyboard-row');
                     row.forEach(key => {
                         const keyEl = document.createElement('button');
                         keyEl.classList.add('keyboard-key');
-                        keyEl.setAttribute('type', 'button');
+                        keyEl.setAttribute('type', 'button'); // Evita que envíe el formulario
                         keyEl.dataset.key = key;
+
                         switch (key) {
-                            case 'BKSP': keyEl.textContent = 'Borrar'; keyEl.classList.add('key-special'); break;
-                            case 'SPACE': keyEl.textContent = 'Espacio'; keyEl.classList.add('key-special'); break;
-                            default: keyEl.textContent = key; break;
+                            case 'BKSP':
+                                keyEl.textContent = 'Borrar';
+                                keyEl.classList.add('key-special');
+                                break;
+                            case 'SPACE':
+                                keyEl.textContent = 'Espacio';
+                                keyEl.classList.add('key-special');
+                                break;
+                            default:
+                                keyEl.textContent = key;
+                                break;
                         }
                         rowEl.appendChild(keyEl);
                     });
@@ -331,12 +406,20 @@
             function handleKeyPress(e) {
                 const key = e.target.closest('.keyboard-key');
                 if (!key) return;
+
                 const keyValue = key.dataset.key;
-                if (keyValue === 'BKSP') answerInputEl.value = answerInputEl.value.slice(0, -1);
-                else if (keyValue === 'SPACE') answerInputEl.value += ' ';
-                else answerInputEl.value += keyValue.toLowerCase();
+
+                if (keyValue === 'BKSP') {
+                    answerInputEl.value = answerInputEl.value.slice(0, -1);
+                } else if (keyValue === 'SPACE') {
+                    answerInputEl.value += ' ';
+                } else {
+                    answerInputEl.value += keyValue.toLowerCase();
+                }
             }
             
+            // --- FIN LÓGICA TECLADO ---
+
             function startGame() {
                 currentRound = 0, score = 0, correctAnswersCount = 0;
                 updateScore(0);
@@ -354,32 +437,40 @@
             }
 
             function createCoverGrid() {
-                coverGridEl.innerHTML = ''; tiles = [];
+                coverGridEl.innerHTML = '';
+                tiles = [];
                 for (let i = 0; i < 80; i++) {
                     const tile = document.createElement('div');
                     tile.classList.add('cover-tile');
-                    coverGridEl.appendChild(tile); tiles.push(tile);
+                    coverGridEl.appendChild(tile);
+                    tiles.push(tile);
                 }
             }
             
             function startButtonCooldown() {
-                isButtonOnCooldown = true; guessButtonEl.disabled = true;
+                isButtonOnCooldown = true;
+                guessButtonEl.disabled = true;
                 let cooldownTime = 3;
                 guessButtonEl.textContent = `Espera ${cooldownTime}s`;
                 const cdInterval = setInterval(() => {
                     cooldownTime--;
-                    if (cooldownTime > 0) guessButtonEl.textContent = `Espera ${cooldownTime}s`;
-                    else {
+                    if (cooldownTime > 0) {
+                        guessButtonEl.textContent = `Espera ${cooldownTime}s`;
+                    } else {
                         clearInterval(cdInterval);
-                        isButtonOnCooldown = false; guessButtonEl.disabled = false;
+                        isButtonOnCooldown = false;
+                        guessButtonEl.disabled = false;
                         guessButtonEl.textContent = 'Adivinar';
                     }
                 }, 1000);
             }
 
             function showHostMessage(message, duration = 4000) {
-                hintTextEl.textContent = message; speechBubbleEl.classList.add('visible');
-                if (duration) setTimeout(() => { if(timer > 0) speechBubbleEl.classList.remove('visible'); }, duration);
+                hintTextEl.textContent = message;
+                speechBubbleEl.classList.add('visible');
+                if (duration) {
+                    setTimeout(() => { if(timer > 0) speechBubbleEl.classList.remove('visible'); }, duration);
+                }
             }
 
             function revealAllTiles() { tiles.forEach(t => t.classList.add('revealed')); tiles = []; }
@@ -407,7 +498,8 @@
                 if (!userAnswer) return;
                 const { answers, hint } = gameRounds[currentRound];
                 if (answers.includes(userAnswer)) {
-                    clearInterval(timerInterval); updateScore(timer); correctAnswersCount++; revealAllTiles();
+                    clearInterval(timerInterval);
+                    updateScore(timer); correctAnswersCount++; revealAllTiles();
                     showHostMessage(`¡Correcto! Es ${answers[0]}. ¡Genial!`, null);
                     setTimeout(() => { currentRound++; loadRound(currentRound); }, 2500);
                 } else {
@@ -425,12 +517,17 @@
                 const percentage = totalRounds > 0 ? (correctAnswersCount / totalRounds) * 100 : 0;
                 finalScoreEl.innerHTML = `Puntuación: ${score} <br> Acertaste ${correctAnswersCount} de ${totalRounds} (${percentage.toFixed(0)}%)`;
                 endGameScreenEl.classList.add('visible');
+                customKeyboardEl.classList.remove('visible'); // Ocultar teclado al final
             }
 
             function resetRound() {
-                clearInterval(timerInterval); answerInputEl.value = ''; speechBubbleEl.classList.remove('visible');
-                guessButtonEl.disabled = false; guessButtonEl.textContent = 'Adivinar';
-                isButtonOnCooldown = false; createCoverGrid();
+                clearInterval(timerInterval);
+                answerInputEl.value = '';
+                speechBubbleEl.classList.remove('visible');
+                guessButtonEl.disabled = false;
+                guessButtonEl.textContent = 'Adivinar';
+                isButtonOnCooldown = false;
+                createCoverGrid();
             }
 
             function revealRandomTile() {
@@ -441,8 +538,21 @@
             
             function updateScore(pointsToAdd) { score += pointsToAdd; infoPuntosEl.textContent = `Puntos: ${score}`; }
             
+            // --- INICIALIZACIÓN Y EVENT LISTENERS ---
+
+            // Crear el teclado una sola vez
             createKeyboard();
+
+            // Event listener para mostrar/ocultar y usar el teclado
+            answerInputEl.addEventListener('click', () => customKeyboardEl.classList.add('visible'));
             customKeyboardEl.addEventListener('click', handleKeyPress);
+            document.addEventListener('click', (e) => {
+                // Ocultar si se hace clic fuera del teclado y del input
+                if (!customKeyboardEl.contains(e.target) && e.target !== answerInputEl) {
+                    customKeyboardEl.classList.remove('visible');
+                }
+            });
+
             answerFormEl.addEventListener('submit', checkAnswer);
             restartButtonEl.addEventListener('click', startGame);
 
