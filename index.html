@@ -9,7 +9,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
     
     <style>
-        /* --- Estilos Generales y Contenedor --- */
         :root {
             --color-fondo: #2c3e50;
             --color-marco: #ecf0f1;
@@ -41,7 +40,6 @@
         .game-container {
             width: 100%;
             max-width: 400px;
-            /* CAMBIO: Aumentar la altura para aprovechar la pantalla */
             height: 95vh; 
             max-height: 850px;
             background-color: white;
@@ -53,47 +51,39 @@
             position: relative;
             overflow: hidden;
             border: 8px solid #333;
-            /* CAMBIO: Distribuir el espacio verticalmente */
             justify-content: space-between; 
         }
 
-        /* --- Barra de Información (Tiempo y Puntos) --- */
         .info-bar {
             display: flex;
             justify-content: space-between;
             font-size: 1.2em;
             font-weight: 700;
-            margin-bottom: 20px;
             padding: 0 10px;
+            /* Se quita el margin-bottom para que space-between haga su trabajo */
         }
         
         #info-puntos { color: var(--color-verde); }
         #info-tiempo { color: var(--color-rojo); }
 
-        /* --- Escenario y Área de Imagen --- */
         .stage {
             position: relative;
             width: 90%;
             aspect-ratio: 4 / 3;
-            margin: 0 auto;
+            margin: 10px auto; /* Añade un pequeño margen vertical */
             background-color: #eee;
             border-radius: 10px;
             border: 3px solid #bdc3c7;
         }
 
         #character-image {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            border-radius: 7px;
+            width: 100%; height: 100%;
+            object-fit: cover; border-radius: 7px;
         }
 
         #cover-grid {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            position: absolute; top: 0; left: 0;
+            width: 100%; height: 100%;
             display: grid;
             grid-template-columns: repeat(10, 1fr);
             grid-template-rows: repeat(8, 1fr);
@@ -104,258 +94,149 @@
             background-color: var(--color-azul);
             transition: opacity 0.7s ease, transform 0.7s ease;
         }
+        .cover-tile.revealed { opacity: 0; transform: scale(0.5); }
         
-        .cover-tile.revealed {
-            opacity: 0;
-            transform: scale(0.5);
-        }
-        
-        /* --- Público y Anfitrión (Hexágonos) --- */
         .hexagon {
-            position: absolute;
-            width: 60px;
-            height: 68px;
+            position: absolute; width: 60px; height: 68px;
             background-color: var(--color-rojo);
             clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            display: flex; justify-content: center; align-items: center;
             animation: float 4s ease-in-out infinite;
         }
         
         .hexagon::after, .hexagon::before {
-            content: '';
-            position: absolute;
-            width: 8px;
-            height: 8px;
-            background-color: white;
-            border-radius: 50%;
-            border: 1px solid #333;
+            content: ''; position: absolute;
+            width: 8px; height: 8px; background-color: white;
+            border-radius: 50%; border: 1px solid #333;
         }
         .hexagon::before { margin-left: -12px; }
         .hexagon::after { margin-left: 12px; }
         
         #h1 { background-color: var(--color-rojo); top: 15%; left: -20px; }
-        #h2 { background-color: var(--color-verde); top: 45%; left: 0px; animation-delay: -1s; width: 50px; height: 56px;}
-        #h3 { background-color: var(--color-azul); top: 30%; right: -15px; animation-delay: -2s; }
+        #h2 { background-color: var(--color-verde); top: 35%; left: 0px; animation-delay: -1s; width: 50px; height: 56px;}
+        #h3 { background-color: var(--color-azul); top: 25%; right: -15px; animation-delay: -2s; }
         #h4 { background-color: var(--color-amarillo); top: 15%; right: 10px; animation-delay: -3s; width: 45px; height: 50px; }
         
         #host {
             background-color: var(--color-naranja);
-            top: 60%;
-            left: 15%;
-            width: 80px;
-            height: 92px;
-            z-index: 10;
+            top: 55%; left: 15%; width: 80px; height: 92px; z-index: 10;
         }
         
         #host::before, #host::after {
-            content: '';
-            position: absolute;
-            width: 28px;
-            height: 28px;
-            background-color: white;
-            border: 4px solid black;
-            border-radius: 50%;
-            top: 20px;
+            content: ''; position: absolute;
+            width: 28px; height: 28px; background-color: white;
+            border: 4px solid black; border-radius: 50%; top: 20px;
         }
-
-        #host::before {
-            left: 10px;
-            background-image: radial-gradient(circle, black 40%, white 41%);
-        }
-        
-        #host::after {
-            right: 10px;
-            background-image: radial-gradient(circle, black 40%, white 41%);
-        }
-        
+        #host::before { left: 10px; background-image: radial-gradient(circle, black 40%, white 41%); }
+        #host::after { right: 10px; background-image: radial-gradient(circle, black 40%, white 41%); }
         .host-glasses {
-            position: absolute;
-            width: 12px;
-            height: 4px;
-            background-color: black;
-            top: 32px;
-            z-index: 15;
+            position: absolute; width: 12px; height: 4px;
+            background-color: black; top: 32px; z-index: 15;
         }
-        
         .host-bowtie {
-            position: absolute;
-            width: 15px;
-            height: 12px;
-            background-color: black;
-            bottom: 12px;
-            border-radius: 2px;
+            position: absolute; width: 15px; height: 12px;
+            background-color: black; bottom: 12px; border-radius: 2px;
         }
         .host-bowtie::before, .host-bowtie::after {
-            content: '';
-            position: absolute;
-            width: 0;
-            height: 0;
-            border-style: solid;
-            top: -2px;
+            content: ''; position: absolute; width: 0; height: 0;
+            border-style: solid; top: -2px;
         }
-        .host-bowtie::before {
-            border-width: 8px 0 8px 14px;
-            border-color: transparent transparent transparent black;
-            right: 100%;
-        }
-        .host-bowtie::after {
-            border-width: 8px 14px 8px 0;
-            border-color: transparent black transparent transparent;
-            left: 100%;
-        }
+        .host-bowtie::before { border-width: 8px 0 8px 14px; border-color: transparent transparent transparent black; right: 100%; }
+        .host-bowtie::after { border-width: 8px 14px 8px 0; border-color: transparent black transparent transparent; left: 100%; }
 
         #speech-bubble {
-            position: absolute;
-            top: 50%;
-            left: 45%;
-            background-color: white;
-            padding: 15px;
-            border-radius: 20px;
-            border: 3px solid black;
-            font-size: 1em;
-            font-weight: 600;
-            max-width: 160px;
-            text-align: center;
-            opacity: 0;
-            visibility: hidden;
-            transform: translateY(20px);
-            transition: opacity 0.5s ease, transform 0.5s ease;
-            z-index: 20;
+            position: absolute; top: 45%; left: 45%;
+            background-color: white; padding: 15px; border-radius: 20px;
+            border: 3px solid black; font-size: 1em; font-weight: 600;
+            max-width: 160px; text-align: center; opacity: 0; visibility: hidden;
+            transform: translateY(20px); transition: opacity 0.5s ease, transform 0.5s ease; z-index: 20;
         }
-        
-        #speech-bubble.visible {
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(0);
-        }
-
+        #speech-bubble.visible { opacity: 1; visibility: visible; transform: translateY(0); }
         #speech-bubble::after {
-            content: '';
-            position: absolute;
-            left: 20px;
-            bottom: -20px;
-            width: 0;
-            height: 0;
-            border: 22px solid transparent;
-            border-top-color: black;
-            border-bottom: 0;
-            border-left: 0;
-            margin-left: -11px;
-            margin-bottom: -11px;
+            content: ''; position: absolute; left: 20px; bottom: -20px;
+            width: 0; height: 0; border: 22px solid transparent;
+            border-top-color: black; border-bottom: 0; border-left: 0;
+            margin-left: -11px; margin-bottom: -11px;
         }
 
-        /* --- Área de Respuesta --- */
+        /* CAMBIO: EL FORMULARIO AHORA ES EL CONTENEDOR DEL ÁREA DE RESPUESTA */
         #answer-form {
-            /* CAMBIO: Eliminar 'margin-top: auto' para que flexbox lo posicione */
-            padding-bottom: 20px;
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 10px; /* Espacio entre input, teclado y botón */
         }
         
         #answer-input {
-            width: 100%;
-            padding: 15px;
-            border-radius: 10px;
-            border: 3px solid #bdc3c7;
-            font-size: 1.2em;
-            text-align: center;
-            font-family: 'Quicksand', sans-serif;
-            font-weight: 700;
-            outline: none;
-            transition: border-color 0.3s, box-shadow 0.3s;
-        }
-
-        #answer-input:focus {
-            border-color: var(--color-naranja);
-            box-shadow: 0 0 10px rgba(243, 156, 18, 0.5);
+            width: 100%; padding: 12px; border-radius: 10px;
+            border: 3px solid #bdc3c7; font-size: 1.2em; text-align: center;
+            font-family: 'Quicksand', sans-serif; font-weight: 700;
+            outline: none; background-color: white;
+            min-height: 50px; /* Asegura una altura mínima */
         }
         
         #guess-button {
-            padding: 15px;
-            font-size: 1.2em;
-            font-family: 'Quicksand', sans-serif;
-            font-weight: 700;
-            background-color: var(--color-naranja);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
+            padding: 15px; font-size: 1.2em; font-family: 'Quicksand', sans-serif;
+            font-weight: 700; background-color: var(--color-naranja); color: white;
+            border: none; border-radius: 10px; cursor: pointer;
             transition: background-color 0.3s, transform 0.1s;
         }
+        #guess-button:active { transform: scale(0.98); }
+        #guess-button:disabled { background-color: #bdc3c7; cursor: not-allowed; }
 
-        #guess-button:hover {
-            background-color: #e67e22;
-        }
+        .shake { animation: shake 0.5s; }
 
-        #guess-button:active {
-            transform: scale(0.98);
-        }
-
-        #guess-button:disabled {
-            background-color: #bdc3c7;
-            cursor: not-allowed;
-        }
-
-        .shake {
-            animation: shake 0.5s;
-        }
-
-        /* --- Pantalla de Fin de Juego --- */
-        #end-game-screen {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(44, 62, 80, 0.95);
-            color: white;
+        /* CAMBIO: ESTILOS SIMPLIFICADOS PARA TECLADO SIEMPRE VISIBLE */
+        #custom-keyboard {
+            padding: 5px;
+            background-color: #e0e4e8;
+            border-radius: 10px;
             display: flex;
             flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 100;
-            text-align: center;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.5s ease;
-            padding: 20px;
-        }
-        
-        #end-game-screen.visible {
-            opacity: 1;
-            visibility: visible;
+            gap: 5px;
         }
 
+        .keyboard-row {
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .keyboard-key {
+            flex: 1;
+            padding: 10px 0;
+            font-size: 1.1em;
+            font-family: 'Quicksand', sans-serif;
+            font-weight: 600;
+            border: none;
+            background-color: #fff;
+            border-radius: 6px;
+            box-shadow: 0 2px 2px rgba(0,0,0,0.1);
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .keyboard-key:active { background-color: #d1d5db; transform: scale(0.98); }
+        .key-special { flex: 1.5; background-color: #adb5bd; color: white; font-weight: 700; }
+        
+        #end-game-screen {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(44, 62, 80, 0.95); color: white;
+            display: flex; flex-direction: column; justify-content: center;
+            align-items: center; z-index: 100; text-align: center;
+            opacity: 0; visibility: hidden; transition: opacity 0.5s ease; padding: 20px;
+        }
+        #end-game-screen.visible { opacity: 1; visibility: visible; }
         #end-game-screen h2 { font-size: 2.5em; margin-bottom: 10px; }
         #end-game-screen p { font-size: 1.5em; margin-bottom: 30px; }
         #restart-button {
-            padding: 15px 30px;
-            font-size: 1.2em;
-            background-color: var(--color-naranja);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            font-weight: 700;
-            transition: background-color 0.3s;
+            padding: 15px 30px; font-size: 1.2em;
+            background-color: var(--color-naranja); color: white;
+            border: none; border-radius: 10px; cursor: pointer;
+            font-weight: 700; transition: background-color 0.3s;
         }
         #restart-button:hover { background-color: #e67e22; }
 
-        /* --- Animaciones --- */
-        @keyframes float {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-            100% { transform: translateY(0px); }
-        }
-        
-        @keyframes shake {
-          0%, 100% { transform: translateX(0); }
-          25% { transform: translateX(-5px); }
-          75% { transform: translateX(5px); }
-        }
+        @keyframes float { 0% {transform: translateY(0px);} 50% {transform: translateY(-10px);} 100% {transform: translateY(0px);} }
+        @keyframes shake { 0%, 100% {transform: translateX(0);} 25% {transform: translateX(-5px);} 75% {transform: translateX(5px);} }
     </style>
 </head>
 <body>
@@ -384,8 +265,12 @@
             <p id="hint-text"></p>
         </div>
         
+        <!-- CAMBIO: EL FORMULARIO AHORA CONTIENE TODO (INPUT, TECLADO, BOTÓN) -->
         <form id="answer-form">
-            <input type="text" id="answer-input" placeholder="Escribir Respuesta" autocomplete="off">
+            <input type="text" id="answer-input" placeholder="Tu respuesta aparecerá aquí" autocomplete="off" readonly>
+            
+            <div id="custom-keyboard"></div>
+            
             <button type="submit" id="guess-button">Adivinar</button>
         </form>
 
@@ -400,137 +285,117 @@
         document.addEventListener('DOMContentLoaded', () => {
 
             const gameRounds = [
-                  {
-                    image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/Hitler_portrait_crop.jpg/960px-Hitler_portrait_crop.jpg',
-                    answers: ['Adolf Hitler', 'hitler'],
-                    hint: 'Tiene un bigote muy chistoso.'
-                },
-                {
-                    image: 'https://www.latercera.com/resizer/CBkQd2uQ9j2J3VdnL2Q0e5j4SbY=/900x600/smart/cloudfront-us-east-1.images.arcpublishing.com/copesa/J7WSP2QOMBG5JIQ52Y7ZU3Z5CE.jpg',
-                    answers: ['pikachu'],
-                    hint: 'Es un ratón eléctrico amarillo, ¡muy famoso!'
-                },
-                {
-                    image: 'https://hips.hearstapps.com/hmg-prod/images/b esponja-1557323530.jpg',
-                    answers: ['bob esponja', 'spongebob'],
-                    hint: 'Vive en una piña debajo del mar.'
-                }
+                { image: 'https://i.blogs.es/ceda9c/super-mario-bros-la-pelicula/1366_2000.jpeg', answers: ['mario', 'mario bros', 'super mario'], hint: 'Es un fontanero italiano que rescata princesas.' },
+                { image: 'https://www.latercera.com/resizer/CBkQd2uQ9j2J3VdnL2Q0e5j4SbY=/900x600/smart/cloudfront-us-east-1.images.arcpublishing.com/copesa/J7WSP2QOMBG5JIQ52Y7ZU3Z5CE.jpg', answers: ['pikachu'], hint: 'Es un ratón eléctrico amarillo, ¡muy famoso!' },
+                { image: 'https://hips.hearstapps.com/hmg-prod/images/b esponja-1557323530.jpg', answers: ['bob esponja', 'spongebob'], hint: 'Vive en una piña debajo del mar.' }
             ];
 
-            // --- VARIABLES DE ESTADO ---
-            let currentRound = 0;
-            let score = 0;
-            let correctAnswersCount = 0;
-            let timer = 50;
-            let timerInterval;
-            let tiles = [];
-            let isButtonOnCooldown = false;
+            let currentRound = 0, score = 0, correctAnswersCount = 0;
+            let timer = 50, timerInterval, tiles = [], isButtonOnCooldown = false;
             
-            // --- ELEMENTOS DEL DOM ---
-            const infoTiempoEl = document.getElementById('info-tiempo');
-            const infoPuntosEl = document.getElementById('info-puntos');
-            const characterImageEl = document.getElementById('character-image');
-            const coverGridEl = document.getElementById('cover-grid');
-            const answerFormEl = document.getElementById('answer-form');
-            const answerInputEl = document.getElementById('answer-input');
-            const speechBubbleEl = document.getElementById('speech-bubble');
-            const hintTextEl = document.getElementById('hint-text');
-            const endGameScreenEl = document.getElementById('end-game-screen');
-            const finalScoreEl = document.getElementById('final-score');
-            const restartButtonEl = document.getElementById('restart-button');
-            const guessButtonEl = document.getElementById('guess-button');
+            const infoTiempoEl = document.getElementById('info-tiempo'), infoPuntosEl = document.getElementById('info-puntos');
+            const characterImageEl = document.getElementById('character-image'), coverGridEl = document.getElementById('cover-grid');
+            const answerFormEl = document.getElementById('answer-form'), answerInputEl = document.getElementById('answer-input');
+            const speechBubbleEl = document.getElementById('speech-bubble'), hintTextEl = document.getElementById('hint-text');
+            const endGameScreenEl = document.getElementById('end-game-screen'), finalScoreEl = document.getElementById('final-score');
+            const restartButtonEl = document.getElementById('restart-button'), guessButtonEl = document.getElementById('guess-button');
+            const customKeyboardEl = document.getElementById('custom-keyboard');
 
+            function createKeyboard() {
+                const keysLayout = [
+                    ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'],
+                    ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'],
+                    ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L'],
+                    ['Z', 'X', 'C', 'V', 'B', 'N', 'M'],
+                    ['SPACE', 'BKSP']
+                ];
+                keysLayout.forEach(row => {
+                    const rowEl = document.createElement('div');
+                    rowEl.classList.add('keyboard-row');
+                    row.forEach(key => {
+                        const keyEl = document.createElement('button');
+                        keyEl.classList.add('keyboard-key');
+                        keyEl.setAttribute('type', 'button');
+                        keyEl.dataset.key = key;
+                        switch (key) {
+                            case 'BKSP': keyEl.textContent = 'Borrar'; keyEl.classList.add('key-special'); break;
+                            case 'SPACE': keyEl.textContent = 'Espacio'; keyEl.classList.add('key-special'); break;
+                            default: keyEl.textContent = key; break;
+                        }
+                        rowEl.appendChild(keyEl);
+                    });
+                    customKeyboardEl.appendChild(rowEl);
+                });
+            }
+
+            function handleKeyPress(e) {
+                const key = e.target.closest('.keyboard-key');
+                if (!key) return;
+                const keyValue = key.dataset.key;
+                if (keyValue === 'BKSP') answerInputEl.value = answerInputEl.value.slice(0, -1);
+                else if (keyValue === 'SPACE') answerInputEl.value += ' ';
+                else answerInputEl.value += keyValue.toLowerCase();
+            }
+            
             function startGame() {
-                currentRound = 0;
-                score = 0;
-                correctAnswersCount = 0;
+                currentRound = 0, score = 0, correctAnswersCount = 0;
                 updateScore(0);
                 endGameScreenEl.classList.remove('visible');
                 loadRound(currentRound);
             }
 
             function loadRound(roundIndex) {
-                if (roundIndex >= gameRounds.length) {
-                    endGame();
-                    return;
-                }
-                
+                if (roundIndex >= gameRounds.length) { endGame(); return; }
                 resetRound();
                 const roundData = gameRounds[roundIndex];
-                
                 characterImageEl.src = roundData.image;
                 startRoundTimer();
-
                 showHostMessage(roundData.hint);
             }
 
             function createCoverGrid() {
-                coverGridEl.innerHTML = '';
-                tiles = [];
-                const totalTiles = 80;
-                for (let i = 0; i < totalTiles; i++) {
+                coverGridEl.innerHTML = ''; tiles = [];
+                for (let i = 0; i < 80; i++) {
                     const tile = document.createElement('div');
                     tile.classList.add('cover-tile');
-                    coverGridEl.appendChild(tile);
-                    tiles.push(tile);
+                    coverGridEl.appendChild(tile); tiles.push(tile);
                 }
             }
             
             function startButtonCooldown() {
-                isButtonOnCooldown = true;
-                guessButtonEl.disabled = true;
+                isButtonOnCooldown = true; guessButtonEl.disabled = true;
                 let cooldownTime = 3;
                 guessButtonEl.textContent = `Espera ${cooldownTime}s`;
-                
-                const cooldownInterval = setInterval(() => {
+                const cdInterval = setInterval(() => {
                     cooldownTime--;
-                    if (cooldownTime > 0) {
-                        guessButtonEl.textContent = `Espera ${cooldownTime}s`;
-                    } else {
-                        clearInterval(cooldownInterval);
-                        isButtonOnCooldown = false;
-                        guessButtonEl.disabled = false;
+                    if (cooldownTime > 0) guessButtonEl.textContent = `Espera ${cooldownTime}s`;
+                    else {
+                        clearInterval(cdInterval);
+                        isButtonOnCooldown = false; guessButtonEl.disabled = false;
                         guessButtonEl.textContent = 'Adivinar';
                     }
                 }, 1000);
             }
 
             function showHostMessage(message, duration = 4000) {
-                hintTextEl.textContent = message;
-                speechBubbleEl.classList.add('visible');
-                if (duration) {
-                    setTimeout(() => {
-                       if(timer > 0) speechBubbleEl.classList.remove('visible');
-                    }, duration);
-                }
+                hintTextEl.textContent = message; speechBubbleEl.classList.add('visible');
+                if (duration) setTimeout(() => { if(timer > 0) speechBubbleEl.classList.remove('visible'); }, duration);
             }
 
-            function revealAllTiles() {
-                tiles.forEach(tile => tile.classList.add('revealed'));
-                tiles = [];
-            }
+            function revealAllTiles() { tiles.forEach(t => t.classList.add('revealed')); tiles = []; }
 
             function startRoundTimer() {
-                timer = 50;
-                infoTiempoEl.textContent = `Tiempo: ${timer}`;
-                
+                timer = 50; infoTiempoEl.textContent = `Tiempo: ${timer}`;
                 timerInterval = setInterval(() => {
                     timer--;
                     infoTiempoEl.textContent = `Tiempo: ${timer}`;
-                    
-                    if (tiles.length > 0) {
-                        revealRandomTile();
-                    }
-
+                    if (tiles.length > 0) revealRandomTile();
                     if (timer <= 0) {
                         clearInterval(timerInterval);
                         revealAllTiles();
                         const correctAnswer = gameRounds[currentRound].answers[0].toUpperCase();
                         showHostMessage(`¡Tiempo! Era ${correctAnswer}.`, null);
-                        setTimeout(() => {
-                            currentRound++;
-                            loadRound(currentRound);
-                        }, 3000);
+                        setTimeout(() => { currentRound++; loadRound(currentRound); }, 3000);
                     }
                 }, 1000);
             }
@@ -538,26 +403,15 @@
             function checkAnswer(e) {
                 e.preventDefault();
                 if (isButtonOnCooldown) return;
-
                 const userAnswer = answerInputEl.value.trim().toLowerCase();
                 if (!userAnswer) return;
-
-                const correctAnswers = gameRounds[currentRound].answers;
-                const roundData = gameRounds[currentRound];
-
-                if (correctAnswers.includes(userAnswer)) {
-                    clearInterval(timerInterval);
-                    updateScore(timer);
-                    correctAnswersCount++;
-                    revealAllTiles();
-                    showHostMessage(`¡Correcto! Es ${roundData.answers[0]}. ¡Genial!`, null);
-                    
-                    setTimeout(() => {
-                        currentRound++;
-                        loadRound(currentRound);
-                    }, 2500);
+                const { answers, hint } = gameRounds[currentRound];
+                if (answers.includes(userAnswer)) {
+                    clearInterval(timerInterval); updateScore(timer); correctAnswersCount++; revealAllTiles();
+                    showHostMessage(`¡Correcto! Es ${answers[0]}. ¡Genial!`, null);
+                    setTimeout(() => { currentRound++; loadRound(currentRound); }, 2500);
                 } else {
-                    showHostMessage(`Nop, esa no es la respuesta. Una pista: ${roundData.hint}`);
+                    showHostMessage(`Nop... Una pista: ${hint}`);
                     answerInputEl.classList.add('shake');
                     setTimeout(() => answerInputEl.classList.remove('shake'), 500);
                     startButtonCooldown();
@@ -569,34 +423,26 @@
                 clearInterval(timerInterval);
                 const totalRounds = gameRounds.length;
                 const percentage = totalRounds > 0 ? (correctAnswersCount / totalRounds) * 100 : 0;
-                
                 finalScoreEl.innerHTML = `Puntuación: ${score} <br> Acertaste ${correctAnswersCount} de ${totalRounds} (${percentage.toFixed(0)}%)`;
                 endGameScreenEl.classList.add('visible');
             }
 
             function resetRound() {
-                clearInterval(timerInterval);
-                answerInputEl.value = '';
-                speechBubbleEl.classList.remove('visible');
-                guessButtonEl.disabled = false;
-                guessButtonEl.textContent = 'Adivinar';
-                isButtonOnCooldown = false;
-                createCoverGrid();
+                clearInterval(timerInterval); answerInputEl.value = ''; speechBubbleEl.classList.remove('visible');
+                guessButtonEl.disabled = false; guessButtonEl.textContent = 'Adivinar';
+                isButtonOnCooldown = false; createCoverGrid();
             }
 
             function revealRandomTile() {
-                const unrevealedTiles = tiles.filter(t => !t.classList.contains('revealed'));
-                if (unrevealedTiles.length === 0) return;
-                
-                const randomIndex = Math.floor(Math.random() * unrevealedTiles.length);
-                unrevealedTiles[randomIndex].classList.add('revealed');
+                const unrevealed = tiles.filter(t => !t.classList.contains('revealed'));
+                if (unrevealed.length === 0) return;
+                unrevealed[Math.floor(Math.random() * unrevealed.length)].classList.add('revealed');
             }
             
-            function updateScore(pointsToAdd) {
-                score += pointsToAdd;
-                infoPuntosEl.textContent = `Puntos: ${score}`;
-            }
+            function updateScore(pointsToAdd) { score += pointsToAdd; infoPuntosEl.textContent = `Puntos: ${score}`; }
             
+            createKeyboard();
+            customKeyboardEl.addEventListener('click', handleKeyPress);
             answerFormEl.addEventListener('submit', checkAnswer);
             restartButtonEl.addEventListener('click', startGame);
 
