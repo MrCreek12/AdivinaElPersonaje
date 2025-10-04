@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Adivina el Personaje</title>
+    <title>Adivina el Personaje Conectando Letras</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
@@ -24,38 +24,30 @@
             display: flex; justify-content: center; align-items: center;
             min-height: 100vh; background-color: var(--color-fondo);
             font-family: 'Quicksand', sans-serif; color: var(--color-texto); font-weight: 600;
+            -webkit-user-select: none; /* Safari */
+            -ms-user-select: none; /* IE 10+ */
+            user-select: none; /* Standard syntax */
         }
         .game-container {
             width: 100%; max-width: 400px; height: 95vh; max-height: 850px;
             background-color: white; border-radius: 20px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
             padding: 20px; display: flex; flex-direction: column;
             position: relative; overflow: hidden; border: 8px solid #333;
-            /* CAMBIO: Se elimina justify-content para que los elementos se apilen arriba */
         }
         .info-bar {
             display: flex; justify-content: space-between;
             font-size: 1.2em; font-weight: 700; padding: 0 10px;
-            margin-bottom: 20px; /* Espacio antes del input */
+            margin-bottom: 20px;
         }
         #info-puntos { color: var(--color-verde); }
         #info-tiempo { color: var(--color-rojo); }
 
-        /* CAMBIO: El formulario ahora está arriba */
-        #answer-form {
-            margin-bottom: 20px; /* Espacio después del input */
-        }
-        #answer-input {
-            width: 100%; padding: 15px; border-radius: 10px;
-            border: 3px solid #bdc3c7; font-size: 1.2em; text-align: center;
-            font-family: 'Quicksand', sans-serif; font-weight: 700;
-            outline: none; background-color: white; min-height: 54px;
-        }
-
         .stage {
             position: relative; width: 90%; aspect-ratio: 4 / 3;
-            margin: 10px auto; background-color: #eee;
+            margin: 10px auto 0 auto; background-color: #eee;
             border-radius: 10px; border: 3px solid #bdc3c7;
         }
+        
         #character-image { width: 100%; height: 100%; object-fit: cover; border-radius: 7px; }
         #cover-grid {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
@@ -64,84 +56,73 @@
         }
         .cover-tile { background-color: var(--color-azul); transition: opacity 0.7s ease, transform 0.7s ease; }
         .cover-tile.revealed { opacity: 0; transform: scale(0.5); }
-        .hexagon {
-            position: absolute; width: 60px; height: 68px; background-color: var(--color-rojo);
-            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
-            display: flex; justify-content: center; align-items: center;
-            animation: float 4s ease-in-out infinite;
-        }
-        .hexagon::after, .hexagon::before {
-            content: ''; position: absolute; width: 8px; height: 8px;
-            background-color: white; border-radius: 50%; border: 1px solid #333;
-        }
-        .hexagon::before { margin-left: -12px; }
-        .hexagon::after { margin-left: 12px; }
-        #h1 { background-color: var(--color-rojo); top: 25%; left: -20px; }
-        #h2 { background-color: var(--color-verde); top: 50%; left: 0px; animation-delay: -1s; width: 50px; height: 56px;}
-        #h3 { background-color: var(--color-azul); top: 40%; right: -15px; animation-delay: -2s; }
-        #h4 { background-color: var(--color-amarillo); top: 25%; right: 10px; animation-delay: -3s; width: 45px; height: 50px; }
         
-        /* CAMBIO: Se ajusta la posición del host y su bocadillo */
         #host {
-            background-color: var(--color-naranja); top: 70%; left: 15%;
-            width: 80px; height: 92px; z-index: 10;
+            position: absolute; bottom: 2%; left: 50%;
+            transform: translateX(-50%); width: 80px; height: auto;
+            z-index: 10; animation: float 4s ease-in-out infinite;
         }
-        #host::before, #host::after {
-            content: ''; position: absolute; width: 28px; height: 28px;
-            background-color: white; border: 4px solid black;
-            border-radius: 50%; top: 20px;
-        }
-        #host::before { left: 10px; background-image: radial-gradient(circle, black 40%, white 41%); }
-        #host::after { right: 10px; background-image: radial-gradient(circle, black 40%, white 41%); }
-        .host-glasses {
-            position: absolute; width: 12px; height: 4px;
-            background-color: black; top: 32px; z-index: 15;
-        }
-        .host-bowtie {
-            position: absolute; width: 15px; height: 12px;
-            background-color: black; bottom: 12px; border-radius: 2px;
-        }
-        .host-bowtie::before, .host-bowtie::after {
-            content: ''; position: absolute; width: 0; height: 0;
-            border-style: solid; top: -2px;
-        }
-        .host-bowtie::before { border-width: 8px 0 8px 14px; border-color: transparent transparent transparent black; right: 100%; }
-        .host-bowtie::after { border-width: 8px 14px 8px 0; border-color: transparent black transparent transparent; left: 100%; }
-        #speech-bubble {
-            position: absolute; top: 60%; left: 45%;
-            background-color: white; padding: 15px; border-radius: 20px;
-            border: 3px solid black; font-size: 1em; font-weight: 600;
-            max-width: 160px; text-align: center; opacity: 0; visibility: hidden;
-            transform: translateY(20px); transition: opacity 0.5s ease, transform 0.5s ease; z-index: 20;
-        }
-        #speech-bubble.visible { opacity: 1; visibility: visible; transform: translateY(0); }
-        #speech-bubble::after {
-            content: ''; position: absolute; left: 20px; bottom: -20px; width: 0; height: 0;
-            border: 22px solid transparent; border-top-color: black;
-            border-bottom: 0; border-left: 0; margin-left: -11px; margin-bottom: -11px;
-        }
-        
-        .shake { animation: shake 0.5s; }
+        #host img { width: 100%; height: 100%; }
 
-        #custom-keyboard {
-            position: absolute; bottom: 0; left: 0; width: 100%;
-            padding: 10px; background-color: #e0e4e8;
-            border-top: 2px solid #bdc3c7; display: flex;
-            flex-direction: column; gap: 6px; z-index: 50;
-            transform: translateY(100%); visibility: hidden;
-            transition: transform 0.3s ease-out, visibility 0.3s ease-out;
+        #speech-bubble {
+            position: absolute; bottom: 25%; left: 50%;
+            transform: translateX(-50%); background-color: white; padding: 15px;
+            border-radius: 15px; border: 3px solid black;
+            font-size: 1em; font-weight: 600;
+            max-width: 170px; text-align: center;
+            opacity: 0; visibility: hidden;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            z-index: 20; box-shadow: 0 4px 10px rgba(0,0,0,0.15);
         }
-        #custom-keyboard.visible { transform: translateY(0); visibility: visible; }
-        .keyboard-row { display: flex; justify-content: center; gap: 6px; }
-        .keyboard-key {
-            flex: 1; padding: 12px 0; font-size: 1.1em; font-family: 'Quicksand', sans-serif;
-            font-weight: 600; border: none; background-color: #fff;
-            border-radius: 8px; box-shadow: 0 2px 2px rgba(0,0,0,0.1);
-            cursor: pointer; -webkit-tap-highlight-color: transparent;
+        #speech-bubble.visible { opacity: 1; visibility: visible; }
+        #speech-bubble::before, #speech-bubble::after {
+            content: ''; position: absolute; bottom: -15px; left: 50%;
+            transform: translateX(-50%); border-style: solid;
+            border-width: 15px 15px 0 15px;
         }
-        .keyboard-key:active { background-color: #d1d5db; transform: scale(0.98); }
-        .key-special { flex: 1.5; background-color: #adb5bd; color: white; font-weight: 700; }
-        .key-submit { background-color: var(--color-naranja); flex-grow: 3; }
+        #speech-bubble::before { border-color: black transparent transparent transparent; bottom: -18px; }
+        #speech-bubble::after { border-color: white transparent transparent transparent; }
+        
+        /* --- INICIO: NUEVOS ESTILOS PARA CONEXIÓN DE LETRAS --- */
+        #word-constructor {
+            margin-top: auto; /* Empuja este bloque hacia abajo */
+            padding-bottom: 110px; /* Espacio para el host */
+            display: flex; flex-direction: column; align-items: center; gap: 20px;
+        }
+
+        #current-word-display {
+            width: 100%; min-height: 54px; padding: 15px;
+            border-radius: 10px; border: 3px solid #bdc3c7; font-size: 1.4em;
+            text-align: center; font-family: 'Quicksand', sans-serif; font-weight: 700;
+            letter-spacing: 3px; color: var(--color-texto);
+        }
+
+        #letter-wheel {
+            position: relative; width: 220px; height: 220px;
+        }
+
+        #line-canvas {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 1;
+        }
+
+        .letter-node {
+            position: absolute;
+            width: 50px; height: 50px;
+            background-color: #ecf0f1;
+            border: 3px solid #bdc3c7; border-radius: 50%;
+            display: flex; justify-content: center; align-items: center;
+            font-size: 1.8em; font-weight: 700;
+            cursor: pointer; z-index: 2;
+            transition: transform 0.2s ease, background-color 0.2s ease;
+        }
+        .letter-node.selected {
+            background-color: var(--color-amarillo);
+            border-color: var(--color-naranja);
+            transform: scale(1.1);
+        }
+        /* --- FIN: NUEVOS ESTILOS --- */
+
 
         #end-game-screen {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
@@ -160,8 +141,8 @@
         }
         #restart-button:hover { background-color: #e67e22; }
 
-        @keyframes float { 0% {transform: translateY(0px);} 50% {transform: translateY(-10px);} 100% {transform: translateY(0px);} }
-        @keyframes shake { 0%, 100% {transform: translateX(0);} 25% {transform: translateX(-5px);} 75% {transform: translateX(5px);} }
+        @keyframes float { 0% {transform: translate(-50%, 0px);} 50% {transform: translate(-50%,-10px);} 100% {transform: translate(-50%, 0px);} }
+        @keyframes shake { 0%, 100% {transform: translateX(0);} 25% {transform: translateX(-8px);} 75% {transform: translateX(8px);} }
     </style>
 </head>
 <body>
@@ -171,23 +152,25 @@
             <span id="info-tiempo">Tiempo: 50</span>
             <span id="info-puntos">Puntos: 0</span>
         </div>
-        
-        <!-- CAMBIO: El formulario ahora está aquí, en la parte superior -->
-        <form id="answer-form">
-            <input type="text" id="answer-input" placeholder="Toca aquí para escribir" autocomplete="off" readonly>
-        </form>
-
-        <div id="h1" class="hexagon"></div><div id="h2" class="hexagon"></div>
-        <div id="h3" class="hexagon"></div><div id="h4" class="hexagon"></div>
 
         <div class="stage">
             <img id="character-image" src="" alt="Personaje a adivinar">
             <div id="cover-grid"></div>
         </div>
-
-        <div id="host" class="hexagon">
-            <div class="host-glasses"></div><div class="host-bowtie"></div>
+        
+        <!-- INICIO: ESTRUCTURA HTML MODIFICADA PARA CONECTAR LETRAS -->
+        <div id="word-constructor">
+            <div id="letter-wheel">
+                <svg id="line-canvas"></svg>
+            </div>
+            <div id="current-word-display"></div>
         </div>
+        <!-- FIN: ESTRUCTURA HTML MODIFICADA -->
+
+        <div id="host">
+            <img src="https://i.postimg.cc/DZBbQpH7/host.png" alt="Host">
+        </div>
+        
         <div id="speech-bubble">
             <p id="hint-text"></p>
         </div>
@@ -197,74 +180,35 @@
             <p id="final-score"></p>
             <button id="restart-button">Jugar de Nuevo</button>
         </div>
-
-        <div id="custom-keyboard"></div>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const gameRounds = [
-                {  image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/Hitler_portrait_crop.jpg/960px-Hitler_portrait_crop.jpg',
-                    answers: ['Adolf Hitler', 'hitler'],
-                    hint: 'Tiene un bigote muy chistoso.'},
-                { image: 'https://www.latercera.com/resizer/CBkQd2uQ9j2J3VdnL2Q0e5j4SbY=/900x600/smart/cloudfront-us-east-1.images.arcpublishing.com/copesa/J7WSP2QOMBG5JIQ52Y7ZU3Z5CE.jpg', 
-                  answers: ['pikachu'], hint: 'Es un ratón eléctrico amarillo, ¡muy famoso!' },
-                { image: 'https://hips.hearstapps.com/hmg-prod/images/b esponja-1557323530.jpg', answers: ['bob esponja', 'spongebob'], hint: 'Vive en una piña debajo del mar.' }
+                { image: 'https://i.blogs.es/ceda9c/super-mario-bros-la-pelicula/1366_2000.jpeg', answers: ['mario'], hint: 'Es un fontanero italiano que rescata princesas.' },
+                { image: 'https://www.latercera.com/resizer/CBkQd2uQ9j2J3VdnL2Q0e5j4SbY=/900x600/smart/cloudfront-us-east-1.images.arcpublishing.com/copesa/J7WSP2QOMBG5JIQ52Y7ZU3Z5CE.jpg', answers: ['pikachu'], hint: 'Es un ratón eléctrico amarillo, ¡muy famoso!' },
+                { image: 'https://hips.hearstapps.com/hmg-prod/images/b esponja-1557323530.jpg', answers: ['bobesponja', 'bob esponja'], hint: 'Vive en una piña debajo del mar.' }
             ];
 
             let currentRound = 0, score = 0, correctAnswersCount = 0;
-            let timer = 50, timerInterval, tiles = [], isButtonOnCooldown = false;
+            let timer = 50, timerInterval, tiles = [];
             
             const infoTiempoEl = document.getElementById('info-tiempo'), infoPuntosEl = document.getElementById('info-puntos');
             const characterImageEl = document.getElementById('character-image'), coverGridEl = document.getElementById('cover-grid');
-            const answerFormEl = document.getElementById('answer-form'), answerInputEl = document.getElementById('answer-input');
             const speechBubbleEl = document.getElementById('speech-bubble'), hintTextEl = document.getElementById('hint-text');
             const endGameScreenEl = document.getElementById('end-game-screen'), finalScoreEl = document.getElementById('final-score');
             const restartButtonEl = document.getElementById('restart-button');
-            const customKeyboardEl = document.getElementById('custom-keyboard');
-
-            function createKeyboard() {
-                const keysLayout = [
-                    ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'],
-                    ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'],
-                    ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L'],
-                    ['Z', 'X', 'C', 'V', 'B', 'N', 'M'],
-                    ['SPACE', 'BKSP', 'Adivinar']
-                ];
-                keysLayout.forEach(row => {
-                    const rowEl = document.createElement('div');
-                    rowEl.classList.add('keyboard-row');
-                    row.forEach(key => {
-                        const keyEl = document.createElement('button');
-                        keyEl.classList.add('keyboard-key');
-                        keyEl.dataset.key = key;
-                        switch (key) {
-                            case 'BKSP':
-                                keyEl.textContent = 'Borrar'; keyEl.classList.add('key-special');
-                                keyEl.setAttribute('type', 'button'); break;
-                            case 'SPACE':
-                                keyEl.textContent = 'Espacio'; keyEl.classList.add('key-special');
-                                keyEl.setAttribute('type', 'button'); break;
-                            case 'Adivinar':
-                                keyEl.textContent = 'Adivinar'; keyEl.classList.add('key-special', 'key-submit');
-                                keyEl.setAttribute('type', 'submit'); keyEl.setAttribute('form', 'answer-form'); break;
-                            default:
-                                keyEl.textContent = key; keyEl.setAttribute('type', 'button'); break;
-                        }
-                        rowEl.appendChild(keyEl);
-                    });
-                    customKeyboardEl.appendChild(rowEl);
-                });
-            }
-
-            function handleKeyPress(e) {
-                const key = e.target.closest('.keyboard-key');
-                if (!key) return;
-                const keyValue = key.dataset.key;
-                if (keyValue === 'BKSP') answerInputEl.value = answerInputEl.value.slice(0, -1);
-                else if (keyValue === 'SPACE') answerInputEl.value += ' ';
-                else if (keyValue !== 'Adivinar') answerInputEl.value += keyValue.toLowerCase();
-            }
+            
+            // --- INICIO: NUEVOS ELEMENTOS Y VARIABLES ---
+            const wordConstructorEl = document.getElementById('word-constructor');
+            const letterWheelEl = document.getElementById('letter-wheel');
+            const wordDisplayEl = document.getElementById('current-word-display');
+            const lineCanvasEl = document.getElementById('line-canvas');
+            
+            let isDrawing = false;
+            let selectedNodes = [];
+            let lineEl = null;
+            // --- FIN: NUEVOS ELEMENTOS Y VARIABLES ---
             
             function startGame() {
                 currentRound = 0, score = 0, correctAnswersCount = 0;
@@ -278,9 +222,118 @@
                 resetRound();
                 const roundData = gameRounds[roundIndex];
                 characterImageEl.src = roundData.image;
+                
+                // --- CAMBIO: Configurar las letras para conectar ---
+                setupLetterWheel(roundData.answers[0]);
+                
                 startRoundTimer();
                 showHostMessage(roundData.hint);
             }
+
+            // --- INICIO: NUEVAS FUNCIONES PARA CONECTAR LETRAS ---
+
+            function setupLetterWheel(answer) {
+                letterWheelEl.innerHTML = '<svg id="line-canvas"></svg>'; // Limpiar letras anteriores
+                const letters = answer.replace(/\s/g, '').toUpperCase().split('');
+                
+                // Mezclar las letras
+                for (let i = letters.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [letters[i], letters[j]] = [letters[j], letters[i]];
+                }
+
+                const radius = 85; // Radio del círculo
+                const centerX = letterWheelEl.offsetWidth / 2;
+                const centerY = letterWheelEl.offsetHeight / 2;
+                const angleStep = (2 * Math.PI) / letters.length;
+
+                letters.forEach((letter, i) => {
+                    const angle = i * angleStep;
+                    const x = centerX + radius * Math.cos(angle) - 25; // 25 es la mitad del ancho del nodo
+                    const y = centerY + radius * Math.sin(angle) - 25; // 25 es la mitad del alto del nodo
+
+                    const node = document.createElement('div');
+                    node.classList.add('letter-node');
+                    node.textContent = letter;
+                    node.dataset.letter = letter;
+                    node.style.left = `${x}px`;
+                    node.style.top = `${y}px`;
+                    letterWheelEl.appendChild(node);
+                });
+            }
+
+            function startDraw(e) {
+                resetWordAttempt();
+                isDrawing = true;
+                const node = e.target.closest('.letter-node');
+                if (!node) return;
+
+                selectedNodes.push(node);
+                node.classList.add('selected');
+                updateWordDisplay();
+
+                lineEl = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
+                lineEl.setAttribute('fill', 'none');
+                lineEl.setAttribute('stroke', 'var(--color-naranja)');
+                lineEl.setAttribute('stroke-width', '5');
+                lineEl.setAttribute('stroke-linecap', 'round');
+                lineEl.setAttribute('stroke-linejoin', 'round');
+                letterWheelEl.querySelector('#line-canvas').appendChild(lineEl);
+                
+                const point = getEventPosition(e, node);
+                lineEl.setAttribute('points', `${point.x},${point.y}`);
+            }
+
+            function draw(e) {
+                if (!isDrawing) return;
+                e.preventDefault();
+
+                const currentNode = document.elementFromPoint(
+                    e.clientX || e.touches[0].clientX,
+                    e.clientY || e.touches[0].clientY
+                );
+
+                if (currentNode && currentNode.classList.contains('letter-node') && !selectedNodes.includes(currentNode)) {
+                    selectedNodes.push(currentNode);
+                    currentNode.classList.add('selected');
+                    updateWordDisplay();
+                    
+                    const point = getEventPosition(e, currentNode);
+                    const currentPoints = lineEl.getAttribute('points');
+                    lineEl.setAttribute('points', `${currentPoints} ${point.x},${point.y}`);
+                }
+            }
+
+            function endDraw() {
+                if (!isDrawing) return;
+                isDrawing = false;
+                
+                const userAnswer = selectedNodes.map(node => node.dataset.letter).join('');
+                checkAnswer(userAnswer); // Llama a la lógica de comprobación
+            }
+            
+            function updateWordDisplay() {
+                wordDisplayEl.textContent = selectedNodes.map(node => node.dataset.letter).join('');
+            }
+            
+            function resetWordAttempt() {
+                selectedNodes.forEach(node => node.classList.remove('selected'));
+                selectedNodes = [];
+                updateWordDisplay();
+                if (lineEl) {
+                    lineEl.remove();
+                    lineEl = null;
+                }
+            }
+            
+            function getEventPosition(e, node) {
+                 return {
+                    x: node.offsetLeft + node.offsetWidth / 2,
+                    y: node.offsetTop + node.offsetHeight / 2
+                };
+            }
+            
+            // --- FIN: NUEVAS FUNCIONES ---
 
             function createCoverGrid() {
                 coverGridEl.innerHTML = ''; tiles = [];
@@ -314,22 +367,27 @@
                 }, 1000);
             }
             
-            function checkAnswer(e) {
-                e.preventDefault();
-                const userAnswer = answerInputEl.value.trim().toLowerCase();
+            // --- CAMBIO: La función checkAnswer ahora recibe la palabra como argumento ---
+            function checkAnswer(userAnswer) {
                 if (!userAnswer) return;
                 const { answers, hint } = gameRounds[currentRound];
-                if (answers.includes(userAnswer)) {
-                    clearInterval(timerInterval); updateScore(timer); correctAnswersCount++; revealAllTiles();
+                const normalizedAnswers = answers.map(a => a.replace(/\s/g, '').toLowerCase());
+                
+                if (normalizedAnswers.includes(userAnswer.toLowerCase())) {
+                    clearInterval(timerInterval); 
+                    updateScore(timer); 
+                    correctAnswersCount++; 
+                    revealAllTiles();
                     showHostMessage(`¡Correcto! Es ${answers[0]}. ¡Genial!`, null);
-                    customKeyboardEl.classList.remove('visible');
                     setTimeout(() => { currentRound++; loadRound(currentRound); }, 2500);
                 } else {
                     showHostMessage(`Nop... Una pista: ${hint}`);
-                    answerInputEl.classList.add('shake');
-                    setTimeout(() => answerInputEl.classList.remove('shake'), 500);
+                    wordConstructorEl.classList.add('shake');
+                    setTimeout(() => {
+                        wordConstructorEl.classList.remove('shake');
+                        resetWordAttempt(); // Limpiar el intento fallido
+                    }, 500);
                 }
-                answerInputEl.value = '';
             }
 
             function endGame() {
@@ -338,12 +396,12 @@
                 const percentage = totalRounds > 0 ? (correctAnswersCount / totalRounds) * 100 : 0;
                 finalScoreEl.innerHTML = `Puntuación: ${score} <br> Acertaste ${correctAnswersCount} de ${totalRounds} (${percentage.toFixed(0)}%)`;
                 endGameScreenEl.classList.add('visible');
-                customKeyboardEl.classList.remove('visible');
             }
 
             function resetRound() {
-                clearInterval(timerInterval); answerInputEl.value = '';
+                clearInterval(timerInterval); 
                 speechBubbleEl.classList.remove('visible');
+                resetWordAttempt();
                 createCoverGrid();
             }
 
@@ -355,17 +413,17 @@
             
             function updateScore(pointsToAdd) { score += pointsToAdd; infoPuntosEl.textContent = `Puntos: ${score}`; }
             
-            createKeyboard();
-            customKeyboardEl.addEventListener('click', handleKeyPress);
-            answerFormEl.addEventListener('submit', checkAnswer);
-            restartButtonEl.addEventListener('click', startGame);
+            // --- CAMBIO: Nuevos event listeners para la mecánica de arrastrar ---
+            letterWheelEl.addEventListener('mousedown', startDraw);
+            document.addEventListener('mousemove', draw);
+            document.addEventListener('mouseup', endDraw);
+            
+            // Para dispositivos táctiles
+            letterWheelEl.addEventListener('touchstart', startDraw, { passive: false });
+            document.addEventListener('touchmove', draw, { passive: false });
+            document.addEventListener('touchend', endDraw);
 
-            answerInputEl.addEventListener('click', () => customKeyboardEl.classList.add('visible'));
-            document.addEventListener('click', (e) => {
-                if (!customKeyboardEl.contains(e.target) && e.target !== answerInputEl) {
-                    customKeyboardEl.classList.remove('visible');
-                }
-            });
+            restartButtonEl.addEventListener('click', startGame);
 
             startGame();
         });
