@@ -57,23 +57,17 @@
         .cover-tile { background-color: var(--color-azul); transition: opacity 0.7s ease, transform 0.7s ease; }
         .cover-tile.revealed { opacity: 0; transform: scale(0.5); }
         
-        /* --- INICIO: ESTILOS MODIFICADOS PARA NUEVO LAYOUT --- */
         #word-constructor {
             margin-top: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 20px;
+            display: flex; flex-direction: column;
+            align-items: center; gap: 20px;
         }
 
         #current-word-display {
             width: 90%; min-height: 54px;
-            font-size: 1.8em;
-            text-align: center;
-            font-family: 'Quicksand', sans-serif;
-            font-weight: 700;
-            letter-spacing: 5px;
-            color: var(--color-texto);
+            font-size: 1.8em; text-align: center;
+            font-family: 'Quicksand', sans-serif; font-weight: 700;
+            letter-spacing: 5px; color: var(--color-texto);
         }
 
         #letter-wheel {
@@ -87,14 +81,12 @@
         }
 
         .letter-node {
-            position: absolute;
-            width: 45px; height: 45px;
-            background-color: #ecf0f1;
-            border: 2px solid #bdc3c7; border-radius: 50%;
-            display: flex; justify-content: center; align-items: center;
-            font-size: 1.6em; font-weight: 700;
-            cursor: pointer; z-index: 2;
-            transition: transform 0.2s ease, background-color 0.2s ease;
+            position: absolute; width: 45px; height: 45px;
+            background-color: #ecf0f1; border: 2px solid #bdc3c7;
+            border-radius: 50%; display: flex;
+            justify-content: center; align-items: center;
+            font-size: 1.6em; font-weight: 700; cursor: pointer;
+            z-index: 2; transition: transform 0.2s ease, background-color 0.2s ease;
         }
         .letter-node.selected {
             background-color: var(--color-amarillo);
@@ -102,61 +94,38 @@
             transform: scale(1.1);
         }
 
+        /* --- INICIO: NUEVOS ESTILOS PARA LA BARRA INFERIOR --- */
         #bottom-bar {
-            margin-top: auto;
-            width: 100%;
-            padding: 5px 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            margin-top: auto; width: 100%;
+            padding: 5px 15px; display: flex;
+            justify-content: space-between; align-items: center;
         }
 
         #host {
-            width: 70px; height: auto;
-            animation: float 4s ease-in-out infinite;
+            width: 70px; height: auto; animation: float 4s ease-in-out infinite;
+            flex-shrink: 0; /* Evita que el host se encoja */
         }
         #host img { width: 100%; }
 
-        #submit-word-button {
-            width: 150px;
+        #hint-box {
+            flex-grow: 1; /* Ocupa el espacio restante */
             height: 60px;
-            font-size: 1.2em;
-            font-family: 'Quicksand', sans-serif;
-            font-weight: 700;
-            color: var(--color-texto);
-            background-color: white;
+            margin-left: 15px; /* Espacio entre el host y la caja */
             border: 3px solid black;
             border-radius: 15px;
-            cursor: pointer;
-            transition: all 0.2s ease;
+            background-color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 5px 10px;
         }
-        #submit-word-button:hover:not(:disabled) { background-color: #fdf2e2; }
-        #submit-word-button:disabled {
-            background-color: #ecf0f1;
-            color: #bdc3c7;
-            cursor: not-allowed;
-            border-color: #bdc3c7;
+        #hint-text {
+            font-size: 0.9em;
+            font-weight: 600;
+            text-align: center;
+            color: var(--color-texto);
         }
-        /* --- FIN: ESTILOS MODIFICADOS --- */
-
-        #speech-bubble {
-            position: absolute; bottom: 110px; /* Ajustado para nueva posición del host */
-            left: 55px; transform: translateX(0);
-            background-color: white; padding: 10px; border-radius: 15px;
-            border: 3px solid black; font-size: 0.9em; font-weight: 600;
-            max-width: 150px; text-align: center;
-            opacity: 0; visibility: hidden;
-            transition: opacity 0.3s ease, transform 0.3s ease;
-            z-index: 20; box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-        }
-        #speech-bubble.visible { opacity: 1; visibility: visible; }
-        #speech-bubble::before, #speech-bubble::after {
-            content: ''; position: absolute; bottom: -15px; left: 20%;
-            transform: translateX(-50%); border-style: solid;
-            border-width: 15px 15px 0 15px;
-        }
-        #speech-bubble::before { border-color: black transparent transparent transparent; bottom: -18px; }
-        #speech-bubble::after { border-color: white transparent transparent transparent; }
+        /* --- FIN: NUEVOS ESTILOS --- */
 
         #end-game-screen {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
@@ -191,7 +160,6 @@
             <div id="cover-grid"></div>
         </div>
         
-        <!-- INICIO: ESTRUCTURA HTML MODIFICADA -->
         <div id="word-constructor">
             <div id="current-word-display"></div>
             <div id="letter-wheel">
@@ -199,16 +167,14 @@
             </div>
         </div>
 
+        <!-- ESTRUCTURA MODIFICADA: Ahora la barra inferior contiene el panel de consejos -->
         <div id="bottom-bar">
             <div id="host">
                 <img src="https://i.postimg.cc/DZBbQpH7/host.png" alt="Host">
             </div>
-            <button id="submit-word-button" disabled>Adivinar</button>
-        </div>
-        <!-- FIN: ESTRUCTURA HTML MODIFICADA -->
-        
-        <div id="speech-bubble">
-            <p id="hint-text"></p>
+            <div id="hint-box">
+                <p id="hint-text"></p>
+            </div>
         </div>
         
         <div id="end-game-screen">
@@ -223,7 +189,7 @@
             const gameRounds = [
                 { image: 'https://www.nintendo.com/eu/media/images/10_share_images/portals_3/2x1_SuperMarioHub_image1600w.jpg', answers: ['mario'], hint: 'Es un fontanero italiano que rescata princesas.' },
                 { image: 'https://external-preview.redd.it/AE6Jw9dqaSdzrz_ZWl_IrwwSd5ViFyiA_sKMELQ9YPs.png?width=640&crop=smart&auto=webp&s=0dc0fb614f688336c3b6553d867b0fbc413575d4', answers: ['pikachu'], hint: 'Es un ratón eléctrico amarillo, ¡muy famoso!' },
-                { image: 'https://hips.hearstapps.com/hmg-prod/images/b esponja-1557323530.jpg', answers: ['bobesponja'], hint: 'Vive en una piña debajo del mar.' }
+                { image: 'https://media.revistagq.com/photos/5ca5f6a77a3aec0df5496c59/4:3/w_1960,h_1470,c_limit/bob_esponja_9564.png', answers: ['bobesponja'], hint: 'Vive en una piña debajo del mar.' }
             ];
 
             let currentRound = 0, score = 0, correctAnswersCount = 0;
@@ -231,14 +197,15 @@
             
             const infoTiempoEl = document.getElementById('info-tiempo'), infoPuntosEl = document.getElementById('info-puntos');
             const characterImageEl = document.getElementById('character-image'), coverGridEl = document.getElementById('cover-grid');
-            const speechBubbleEl = document.getElementById('speech-bubble'), hintTextEl = document.getElementById('hint-text');
             const endGameScreenEl = document.getElementById('end-game-screen'), finalScoreEl = document.getElementById('final-score');
             const restartButtonEl = document.getElementById('restart-button');
             
             const wordConstructorEl = document.getElementById('word-constructor');
             const letterWheelEl = document.getElementById('letter-wheel');
             const wordDisplayEl = document.getElementById('current-word-display');
-            const submitWordBtn = document.getElementById('submit-word-button');
+            
+            // CAMBIO: La referencia ahora es al texto dentro del nuevo panel de consejos
+            const hintTextEl = document.getElementById('hint-text');
             
             let isDrawing = false;
             let selectedNodes = [];
@@ -269,7 +236,7 @@
                     [letters[i], letters[j]] = [letters[j], letters[i]];
                 }
 
-                const radius = 95; // Radio del círculo de letras
+                const radius = 95;
                 const centerX = letterWheelEl.offsetWidth / 2;
                 const centerY = letterWheelEl.offsetHeight / 2;
                 const angleStep = (2 * Math.PI) / letters.length;
@@ -335,7 +302,7 @@
                 }
             }
             
-            // CAMBIO: endDraw ya no comprueba la respuesta, solo finaliza el dibujo
+            // CAMBIO: endDraw vuelve a ejecutar la comprobación de la respuesta
             function endDraw() {
                 if (!isDrawing) return;
                 isDrawing = false;
@@ -345,14 +312,16 @@
                     return `${pos.x},${pos.y}`;
                 }).join(' ');
                 
-                if (lineEl) {
-                    lineEl.setAttribute('points', finalPoints);
+                if (lineEl) lineEl.setAttribute('points', finalPoints);
+                
+                const userAnswer = selectedNodes.map(node => node.dataset.letter).join('');
+                if (userAnswer) {
+                    checkAnswer(userAnswer);
                 }
             }
             
             function updateWordDisplay() {
                 wordDisplayEl.textContent = selectedNodes.map(node => node.dataset.letter).join('');
-                submitWordBtn.disabled = selectedNodes.length === 0;
             }
             
             function resetWordAttempt() {
@@ -387,9 +356,9 @@
                 }
             }
             
-            function showHostMessage(message, duration = 4000) {
-                hintTextEl.textContent = message; speechBubbleEl.classList.add('visible');
-                if (duration) setTimeout(() => { if(timer > 0) speechBubbleEl.classList.remove('visible'); }, duration);
+            // CAMBIO: showHostMessage ahora es más simple, solo actualiza el texto del panel.
+            function showHostMessage(message) {
+                hintTextEl.textContent = message;
             }
 
             function revealAllTiles() { tiles.forEach(t => t.classList.add('revealed')); tiles = []; }
@@ -404,7 +373,7 @@
                         clearInterval(timerInterval);
                         revealAllTiles();
                         const correctAnswer = gameRounds[currentRound].answers[0].toUpperCase();
-                        showHostMessage(`¡Tiempo! Era ${correctAnswer}.`, null);
+                        showHostMessage(`¡Tiempo! Era ${correctAnswer}.`);
                         setTimeout(() => { currentRound++; loadRound(currentRound); }, 3000);
                     }
                 }, 1000);
@@ -420,10 +389,10 @@
                     updateScore(timer); 
                     correctAnswersCount++; 
                     revealAllTiles();
-                    showHostMessage(`¡Correcto! Es ${answers[0]}. ¡Genial!`, null);
+                    showHostMessage(`¡Correcto! Es ${answers[0]}. ¡Genial!`);
                     setTimeout(() => { currentRound++; loadRound(currentRound); }, 2500);
                 } else {
-                    showHostMessage(`Nop... Una pista: ${hint}`);
+                    showHostMessage(`Nop... ${hint}`); // Muestra la pista de nuevo al fallar
                     wordConstructorEl.classList.add('shake');
                     setTimeout(() => {
                         wordConstructorEl.classList.remove('shake');
@@ -442,7 +411,7 @@
 
             function resetRound() {
                 clearInterval(timerInterval); 
-                speechBubbleEl.classList.remove('visible');
+                showHostMessage(""); // Limpia el panel de consejos
                 resetWordAttempt();
                 createCoverGrid();
             }
@@ -462,12 +431,6 @@
             letterWheelEl.addEventListener('touchstart', startDraw, { passive: false });
             document.addEventListener('touchmove', draw, { passive: false });
             document.addEventListener('touchend', endDraw);
-
-            // NUEVO: Event listener para el botón de adivinar
-            submitWordBtn.addEventListener('click', () => {
-                const userAnswer = selectedNodes.map(node => node.dataset.letter).join('');
-                checkAnswer(userAnswer);
-            });
 
             restartButtonEl.addEventListener('click', startGame);
 
