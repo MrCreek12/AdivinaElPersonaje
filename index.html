@@ -83,10 +83,9 @@
         #speech-bubble::before { border-color: black transparent transparent transparent; bottom: -18px; }
         #speech-bubble::after { border-color: white transparent transparent transparent; }
         
-        /* --- INICIO: NUEVOS ESTILOS PARA CONEXIÓN DE LETRAS --- */
         #word-constructor {
-            margin-top: auto; /* Empuja este bloque hacia abajo */
-            padding-bottom: 110px; /* Espacio para el host */
+            margin-top: auto;
+            padding-bottom: 110px;
             display: flex; flex-direction: column; align-items: center; gap: 20px;
         }
 
@@ -121,8 +120,6 @@
             border-color: var(--color-naranja);
             transform: scale(1.1);
         }
-        /* --- FIN: NUEVOS ESTILOS --- */
-
 
         #end-game-screen {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
@@ -158,14 +155,12 @@
             <div id="cover-grid"></div>
         </div>
         
-        <!-- INICIO: ESTRUCTURA HTML MODIFICADA PARA CONECTAR LETRAS -->
         <div id="word-constructor">
             <div id="letter-wheel">
                 <svg id="line-canvas"></svg>
             </div>
             <div id="current-word-display"></div>
         </div>
-        <!-- FIN: ESTRUCTURA HTML MODIFICADA -->
 
         <div id="host">
             <img src="https://i.postimg.cc/DZBbQpH7/host.png" alt="Host">
@@ -199,7 +194,6 @@
             const endGameScreenEl = document.getElementById('end-game-screen'), finalScoreEl = document.getElementById('final-score');
             const restartButtonEl = document.getElementById('restart-button');
             
-            // --- INICIO: NUEVOS ELEMENTOS Y VARIABLES ---
             const wordConstructorEl = document.getElementById('word-constructor');
             const letterWheelEl = document.getElementById('letter-wheel');
             const wordDisplayEl = document.getElementById('current-word-display');
@@ -208,7 +202,6 @@
             let isDrawing = false;
             let selectedNodes = [];
             let lineEl = null;
-            // --- FIN: NUEVOS ELEMENTOS Y VARIABLES ---
             
             function startGame() {
                 currentRound = 0, score = 0, correctAnswersCount = 0;
@@ -222,35 +215,28 @@
                 resetRound();
                 const roundData = gameRounds[roundIndex];
                 characterImageEl.src = roundData.image;
-                
-                // --- CAMBIO: Configurar las letras para conectar ---
                 setupLetterWheel(roundData.answers[0]);
-                
                 startRoundTimer();
                 showHostMessage(roundData.hint);
             }
 
-            // --- INICIO: NUEVAS FUNCIONES PARA CONECTAR LETRAS ---
-
             function setupLetterWheel(answer) {
-                letterWheelEl.innerHTML = '<svg id="line-canvas"></svg>'; // Limpiar letras anteriores
+                letterWheelEl.innerHTML = '<svg id="line-canvas"></svg>';
                 const letters = answer.replace(/\s/g, '').toUpperCase().split('');
-                
-                // Mezclar las letras
                 for (let i = letters.length - 1; i > 0; i--) {
                     const j = Math.floor(Math.random() * (i + 1));
                     [letters[i], letters[j]] = [letters[j], letters[i]];
                 }
 
-                const radius = 85; // Radio del círculo
+                const radius = 85;
                 const centerX = letterWheelEl.offsetWidth / 2;
                 const centerY = letterWheelEl.offsetHeight / 2;
                 const angleStep = (2 * Math.PI) / letters.length;
 
                 letters.forEach((letter, i) => {
                     const angle = i * angleStep;
-                    const x = centerX + radius * Math.cos(angle) - 25; // 25 es la mitad del ancho del nodo
-                    const y = centerY + radius * Math.sin(angle) - 25; // 25 es la mitad del alto del nodo
+                    const x = centerX + radius * Math.cos(angle) - 25;
+                    const y = centerY + radius * Math.sin(angle) - 25;
 
                     const node = document.createElement('div');
                     node.classList.add('letter-node');
@@ -263,10 +249,11 @@
             }
 
             function startDraw(e) {
-                resetWordAttempt();
-                isDrawing = true;
                 const node = e.target.closest('.letter-node');
                 if (!node) return;
+                
+                resetWordAttempt();
+                isDrawing = true;
 
                 selectedNodes.push(node);
                 node.classList.add('selected');
@@ -280,36 +267,54 @@
                 lineEl.setAttribute('stroke-linejoin', 'round');
                 letterWheelEl.querySelector('#line-canvas').appendChild(lineEl);
                 
-                const point = getEventPosition(e, node);
+                const point = getEventPosition(node);
                 lineEl.setAttribute('points', `${point.x},${point.y}`);
             }
 
+            // MODIFICADO: La función draw ahora crea una línea guía hasta el cursor
             function draw(e) {
                 if (!isDrawing) return;
                 e.preventDefault();
 
-                const currentNode = document.elementFromPoint(
-                    e.clientX || e.touches[0].clientX,
-                    e.clientY || e.touches[0].clientY
-                );
+                // Obtener los puntos de los nodos ya seleccionados
+                let pointsString = selectedNodes.map(node => {
+                    const pos = getEventPosition(node);
+                    return `${pos.x},${pos.y}`;
+                }).join(' ');
+
+                // Añadir la posición actual del cursor para la línea guía
+                const cursorPoint = getCursorPosition(e, letterWheelEl);
+                lineEl.setAttribute('points', `${pointsString} ${cursorPoint.x},${cursorPoint.y}`);
+
+                // Comprobar si el cursor está sobre un nuevo nodo
+                const clientX = e.clientX || e.touches[0].clientX;
+                const clientY = e.clientY || e.touches[0].clientY;
+                const currentNode = document.elementFromPoint(clientX, clientY);
 
                 if (currentNode && currentNode.classList.contains('letter-node') && !selectedNodes.includes(currentNode)) {
                     selectedNodes.push(currentNode);
                     currentNode.classList.add('selected');
                     updateWordDisplay();
-                    
-                    const point = getEventPosition(e, currentNode);
-                    const currentPoints = lineEl.getAttribute('points');
-                    lineEl.setAttribute('points', `${currentPoints} ${point.x},${point.y}`);
                 }
             }
 
+            // MODIFICADO: endDraw limpia la línea guía y finaliza el trazo
             function endDraw() {
                 if (!isDrawing) return;
                 isDrawing = false;
                 
+                // Finalizar la línea conectando solo los nodos seleccionados
+                const finalPoints = selectedNodes.map(node => {
+                    const pos = getEventPosition(node);
+                    return `${pos.x},${pos.y}`;
+                }).join(' ');
+                
+                if (lineEl) {
+                    lineEl.setAttribute('points', finalPoints);
+                }
+
                 const userAnswer = selectedNodes.map(node => node.dataset.letter).join('');
-                checkAnswer(userAnswer); // Llama a la lógica de comprobación
+                checkAnswer(userAnswer);
             }
             
             function updateWordDisplay() {
@@ -320,21 +325,29 @@
                 selectedNodes.forEach(node => node.classList.remove('selected'));
                 selectedNodes = [];
                 updateWordDisplay();
-                if (lineEl) {
-                    lineEl.remove();
-                    lineEl = null;
-                }
+                const canvas = letterWheelEl.querySelector('#line-canvas');
+                if(canvas) canvas.innerHTML = '';
+                lineEl = null;
             }
             
-            function getEventPosition(e, node) {
+            // NUEVO: Función para obtener la posición del cursor relativa a un elemento
+            function getCursorPosition(e, relativeTo) {
+                const rect = relativeTo.getBoundingClientRect();
+                const clientX = e.clientX || e.touches[0].clientX;
+                const clientY = e.clientY || e.touches[0].clientY;
+                return {
+                    x: clientX - rect.left,
+                    y: clientY - rect.top
+                };
+            }
+
+            function getEventPosition(node) {
                  return {
                     x: node.offsetLeft + node.offsetWidth / 2,
                     y: node.offsetTop + node.offsetHeight / 2
                 };
             }
             
-            // --- FIN: NUEVAS FUNCIONES ---
-
             function createCoverGrid() {
                 coverGridEl.innerHTML = ''; tiles = [];
                 for (let i = 0; i < 80; i++) {
@@ -367,7 +380,6 @@
                 }, 1000);
             }
             
-            // --- CAMBIO: La función checkAnswer ahora recibe la palabra como argumento ---
             function checkAnswer(userAnswer) {
                 if (!userAnswer) return;
                 const { answers, hint } = gameRounds[currentRound];
@@ -385,7 +397,7 @@
                     wordConstructorEl.classList.add('shake');
                     setTimeout(() => {
                         wordConstructorEl.classList.remove('shake');
-                        resetWordAttempt(); // Limpiar el intento fallido
+                        resetWordAttempt();
                     }, 500);
                 }
             }
@@ -413,12 +425,10 @@
             
             function updateScore(pointsToAdd) { score += pointsToAdd; infoPuntosEl.textContent = `Puntos: ${score}`; }
             
-            // --- CAMBIO: Nuevos event listeners para la mecánica de arrastrar ---
             letterWheelEl.addEventListener('mousedown', startDraw);
             document.addEventListener('mousemove', draw);
             document.addEventListener('mouseup', endDraw);
             
-            // Para dispositivos táctiles
             letterWheelEl.addEventListener('touchstart', startDraw, { passive: false });
             document.addEventListener('touchmove', draw, { passive: false });
             document.addEventListener('touchend', endDraw);
