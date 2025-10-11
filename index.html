@@ -355,6 +355,39 @@
 
             // --- INICIO: LÓGICA DE RECOPILACIÓN DE DATOS ---
 
+            // --- INICIO: FUNCIONES PARA ENVÍO DE DATOS A LA API ---
+
+            // Función para extraer user_id de la URL
+            function getUserIdFromURL() {
+                const urlParams = new URLSearchParams(window.location.search);
+                const userId = urlParams.get('user_id');
+                return userId ? parseInt(userId) : null;
+            }
+
+            // Función para guardar datos del juego en la API (silenciosa)
+            function saveGameData(data) {
+                // Verificar que exista user_id antes de proceder
+                if (!data.user_id) {
+                    return;
+                }
+                
+                // Enviar datos a la API de forma silenciosa
+                fetch('https://puramentebackend.onrender.com/api/game-attempts/from-game', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Éxito silencioso - no mostrar nada al usuario
+                })
+                .catch(error => {
+                    // Error silencioso - no mostrar nada al usuario
+                });
+            }
+
             function calculateNormalizedScore() {
                 const totalRounds = gameRounds.length;
                 const maxScorePerRound = 50; 
@@ -366,27 +399,27 @@
 
             function logGameStats() {
                 const totalDurationSeconds = gameEndTime && gameStartTime ? Math.round((gameEndTime - gameStartTime) / 1000) : 0;
-                const normalizedScore = calculateNormalizedScore();
                 
-                // Crea el objeto JSON con todos los datos del juego
-                const gameStats = {
-                    userId: getUserId() || "No especificado",
-                    gameId: 2, // ID para "Adivina el Personaje"
-                    scoreRaw: score,
-                    scoreNormalized: normalizedScore, // Puntaje en escala 0-100
-                    correctAnswers: correctAnswersCount,
-                    totalChallenges: gameRounds.length,
-                    timeSpentSeconds: totalDurationSeconds,
-                    gameCompleted: true
-                };
+                // Envío silencioso de datos a la API
+                const userId = getUserIdFromURL();
                 
-                // Muestra el objeto JSON en la consola del navegador
-                console.log("--- Resumen de la Partida ---");
-                console.log("Datos del juego en formato JSON:");
-                console.log(JSON.stringify(gameStats, null, 2)); // El `null, 2` lo formatea para que sea legible
+                if (userId) {
+                    // Calcular el máximo puntaje posible
+                    const maxPossibleScore = gameRounds.length * 50; // 50 puntos máximo por ronda
+                    
+                    const gameData = {
+                        user_id: userId,
+                        game_id: 8,
+                        correct_challenges: score, // puntaje obtenido por el usuario
+                        total_challenges: maxPossibleScore, // máximo puntaje que se podía obtener
+                        time_spent: totalDurationSeconds
+                    };
+
+                    saveGameData(gameData);
+                }
             }
             
-            // --- FIN: LÓGICA DE RECOPILACIÓN ---
+            // --- FIN: LÓGICA DE RECOPILACIÓN Y ENVÍO ---
 
             // --- Funciones de utilidad del juego (sin cambios) ---
             function resetRound() {
