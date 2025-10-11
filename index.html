@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Adivina el Personaje Conectando Letras</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
     
     <style>
@@ -31,117 +31,110 @@
         .game-container {
             width: 100%; max-width: 400px; height: 95vh; max-height: 850px;
             background-color: white; border-radius: 20px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-            padding: 20px; display: flex; flex-direction: column;
+            display: flex; flex-direction: column;
             position: relative; overflow: hidden; border: 8px solid #333;
         }
-        .info-bar {
-            display: flex; justify-content: space-between;
-            font-size: 1.2em; font-weight: 700; padding: 0 10px;
-            margin-bottom: 15px;
+        .screen {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: white; display: flex; flex-direction: column;
+            justify-content: flex-start; align-items: center;
+            padding: 20px; transition: opacity 0.5s ease, visibility 0.5s ease;
+            opacity: 0; visibility: hidden; z-index: 10;
         }
+        .screen.active { opacity: 1; visibility: visible; }
+        #instructions-screen.screen { justify-content: flex-start; align-items: flex-start; gap: 10px; }
+        #instructions-screen .subject { font-size: 1em; color: #888; margin-bottom: 0; font-weight: lighter; }
+        #instructions-screen .title { font-size: 2.2em; font-weight: 700; color: var(--color-texto); margin-bottom: 10px; }
+        #instructions-screen .description { font-size: 0.95em; color: var(--color-texto); line-height: 1.4; text-align: left; margin-bottom: 20px; font-weight: normal; width: 100%; }
+        #instructions-screen .placeholder-image { width: 90%; aspect-ratio: 4 / 3; background-color: #ffffff; border-radius: 10px; border: 3px solid #bdc3c7; object-fit: cover; margin-bottom: 20px; align-self: center; }
+        #instructions-screen .stats { display: flex; justify-content: space-around; width: 90%; margin-bottom: 40px; align-self: center; }
+        #instructions-screen .stat-item { display: flex; flex-direction: column; align-items: center; gap: 5px; }
+        #instructions-screen .stat-item .value { font-size: 1.4em; font-weight: 700; color: var(--color-texto); }
+        #instructions-screen .stat-item .label { font-size: 0.9em; color: #888; }
+        #startButton { padding: 15px 50px; font-size: 1.2em; background-color: black; color: white; border: none; border-radius: 30px; cursor: pointer; transition: background-color 0.3s; margin-top: auto; width: 80%; align-self: center; }
+        #startButton:hover { background-color: #333; }
+        .info-bar { display: flex; justify-content: space-between; font-size: 1.2em; font-weight: 700; padding: 10px 10px; margin-bottom: 15px; width: 100%; }
         #info-puntos { color: var(--color-verde); }
         #info-tiempo { color: var(--color-rojo); }
-
-        .stage {
-            position: relative; width: 90%; aspect-ratio: 4 / 3;
-            margin: 0 auto; background-color: #eee;
-            border-radius: 10px; border: 3px solid #bdc3c7;
-        }
-        
+        .stage { position: relative; width: 90%; aspect-ratio: 4 / 3; margin: 0 auto; background-color: #eee; border-radius: 10px; border: 3px solid #bdc3c7; }
         #character-image { width: 100%; height: 100%; object-fit: cover; border-radius: 7px; }
-        #cover-grid {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            display: grid; grid-template-columns: repeat(10, 1fr);
-            grid-template-rows: repeat(8, 1fr); pointer-events: none;
-        }
+        #cover-grid { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: grid; grid-template-columns: repeat(10, 1fr); grid-template-rows: repeat(8, 1fr); pointer-events: none; }
         .cover-tile { background-color: var(--color-azul); transition: opacity 0.7s ease, transform 0.7s ease; }
         .cover-tile.revealed { opacity: 0; transform: scale(0.5); }
-        
-        #word-constructor {
-            margin-top: 20px;
-            display: flex; flex-direction: column;
-            align-items: center; gap: 20px;
-        }
-
-        #current-word-display {
-            width: 90%; min-height: 54px;
-            font-size: 1.8em; text-align: center;
-            font-family: 'Quicksand', sans-serif; font-weight: 700;
-            letter-spacing: 5px; color: var(--color-texto);
-        }
-
-        #letter-wheel {
-            position: relative;
-            width: 240px; height: 240px;
-        }
-
-        #line-canvas {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none; z-index: 1;
-        }
-
-        .letter-node {
-            position: absolute; width: 45px; height: 45px;
-            background-color: #ecf0f1; border: 2px solid #bdc3c7;
-            border-radius: 50%; display: flex;
-            justify-content: center; align-items: center;
-            font-size: 1.6em; font-weight: 700; cursor: pointer;
-            z-index: 2; transition: transform 0.2s ease, background-color 0.2s ease;
-        }
-        .letter-node.selected {
-            background-color: var(--color-amarillo);
-            border-color: var(--color-naranja);
-            transform: scale(1.1);
-        }
-
-        /* --- INICIO: NUEVOS ESTILOS PARA LA BARRA INFERIOR --- */
-        #bottom-bar {
-            margin-top: auto; width: 100%;
-            padding: 5px 15px; display: flex;
-            justify-content: space-between; align-items: center;
-        }
-
-        #host {
-            width: 70px; height: auto; animation: float 4s ease-in-out infinite;
-            flex-shrink: 0; /* Evita que el host se encoja */
-        }
+        #word-constructor { margin-top: 20px; display: flex; flex-direction: column; align-items: center; gap: 20px; }
+        #current-word-display { width: 90%; min-height: 54px; font-size: 1.8em; text-align: center; font-family: 'Quicksand', sans-serif; font-weight: 700; letter-spacing: 5px; color: var(--color-texto); }
+        #letter-wheel { position: relative; width: 240px; height: 240px; }
+        #line-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
+        .letter-node { position: absolute; width: 45px; height: 45px; background-color: #ecf0f1; border: 2px solid #bdc3c7; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 1.6em; font-weight: 700; cursor: pointer; z-index: 2; transition: transform 0.2s ease, background-color 0.2s ease; }
+        .letter-node.selected { background-color: var(--color-amarillo); border-color: var(--color-naranja); transform: scale(1.1); }
+        #bottom-bar { margin-top: auto; width: 100%; padding: 5px 15px; display: flex; justify-content: space-between; align-items: center; }
+        #host { width: 70px; height: auto; animation: float 4s ease-in-out infinite; flex-shrink: 0; }
         #host img { width: 100%; }
+        #hint-box { flex-grow: 1; height: 60px; margin-left: 15px; border: 3px solid black; border-radius: 15px; background-color: white; display: flex; justify-content: center; align-items: center; padding: 5px 10px; }
+        #hint-text { font-size: 0.9em; font-weight: 600; text-align: center; color: var(--color-texto); }
+        #end-game-screen.screen { background-color: rgba(44, 62, 80, 0.95); color: white; justify-content: center; align-items: center; z-index: 100; text-align: center; padding: 20px; }
+        #end-game-screen h2 { font-size: 2.5em; margin-bottom: 10px; }
+        #end-game-screen p { font-size: 1.5em; margin-bottom: 30px; }
+        
+        /* --- ESTILOS AÑADIDOS Y MODIFICADOS --- */
+        .end-game-buttons {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            width: 100%;
+            margin-top: 20px;
+        }
+        .end-game-btn {
+            padding: 15px 30px;
+            font-size: 1.2em;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: background-color 0.3s;
+            width: 80%;
+            max-width: 280px;
+        }
+        #restart-button {
+            background-color: var(--color-naranja);
+        }
+        #restart-button:hover {
+            background-color: #d35400;
+        }
+        #back-to-start-button {
+            background-color: var(--color-azul);
+        }
+         #back-to-start-button:hover {
+            background-color: #2980b9;
+        }
 
-        #hint-box {
-            flex-grow: 1; /* Ocupa el espacio restante */
-            height: 60px;
-            margin-left: 15px; /* Espacio entre el host y la caja */
-            border: 3px solid black;
-            border-radius: 15px;
-            background-color: white;
+        /* NUEVOS ESTILOS PARA EL COUNTDOWN */
+        #countdown-overlay {
+            background-color: rgba(0, 0, 0, 0.8); /* Fondo oscuro semi-transparente */
+            z-index: 99; /* Asegura que esté por encima de la pantalla de inicio */
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 5px 10px;
-        }
-        #hint-text {
-            font-size: 0.9em;
-            font-weight: 600;
+            padding: 0; /* Sin padding para ocupar toda la pantalla */
             text-align: center;
-            color: var(--color-texto);
         }
-        /* --- FIN: NUEVOS ESTILOS --- */
 
-        #end-game-screen {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: rgba(44, 62, 80, 0.95); color: white;
-            display: flex; flex-direction: column; justify-content: center;
-            align-items: center; z-index: 100; text-align: center;
-            opacity: 0; visibility: hidden; transition: opacity 0.5s ease; padding: 20px;
+        #countdown-text {
+            font-size: 6em; /* Tamaño grande para el texto */
+            font-weight: 700;
+            color: white;
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.7); /* Un ligero brillo */
+            /* La animación se aplicará dinámicamente con JS */
         }
-        #end-game-screen.visible { opacity: 1; visibility: visible; }
-        #end-game-screen h2 { font-size: 2.5em; margin-bottom: 10px; }
-        #end-game-screen p { font-size: 1.5em; margin-bottom: 30px; }
-        #restart-button {
-            padding: 15px 30px; font-size: 1.2em; background-color: var(--color-naranja);
-            color: white; border: none; border-radius: 10px;
-            cursor: pointer; font-weight: 700; transition: background-color 0.3s;
+
+        @keyframes countdownBounce { /* Animación para el texto del countdown */
+            0% { transform: scale(0.5); opacity: 0; }
+            70% { transform: scale(1.2); opacity: 1; }
+            100% { transform: scale(1); }
         }
+        /* --- FIN DE ESTILOS AÑADIDOS --- */
 
         @keyframes float { 0% {transform: translateY(0px);} 50% {transform: translateY(-8px);} 100% {transform: translateY(0px);} }
         @keyframes shake { 0%, 100% {transform: translateX(0);} 25% {transform: translateX(-8px);} 75% {transform: translateX(8px);} }
@@ -150,76 +143,166 @@
 <body>
 
     <div class="game-container">
-        <div class="info-bar">
-            <span id="info-tiempo">Tiempo: 50</span>
-            <span id="info-puntos">Puntos: 0</span>
+        <!-- Pantalla de Instrucciones -->
+        <div id="instructions-screen" class="screen">
+            <span class="subject">Estudios Sociales</span>
+            <h1 class="title">Adivina el Personaje</h1>
+            <p class="description">Adivina el personaje que se esconde detrás de la cortina, para esto deberas conectar las letras en orden correcto, pero hazlo antes de que se acabe el tiempo!</p>
+            <div class="placeholder-image">
+                <img src="Main-image.png" alt="">
+            </div>
+            <div class="stats">
+                <div class="stat-item">
+                    <span class="value">5 min</span>
+                    <span class="label">Tiempo Estimado</span>
+                </div>
+                <div class="stat-item">
+                    <span class="value">50 p</span>
+                    <span class="label">Record</span>
+                </div>
+            </div>
+            <button id="startButton">Empezar</button>
         </div>
 
-        <div class="stage">
-            <img id="character-image" src="" alt="Personaje a adivinar">
-            <div id="cover-grid"></div>
-        </div>
-        
-        <div id="word-constructor">
-            <div id="current-word-display"></div>
-            <div id="letter-wheel">
-                <svg id="line-canvas"></svg>
-            </div>
+        <!-- NUEVA: Pantalla del Countdown -->
+        <div id="countdown-overlay" class="screen">
+            <div id="countdown-text"></div>
         </div>
 
-        <!-- ESTRUCTURA MODIFICADA: Ahora la barra inferior contiene el panel de consejos -->
-        <div id="bottom-bar">
-            <div id="host">
-                <img src="https://i.postimg.cc/DZBbQpH7/host.png" alt="Host">
+        <!-- Pantalla del Juego -->
+        <div id="game-screen" class="screen">
+            <div class="info-bar">
+                <span id="info-tiempo">Tiempo: 50</span>
+                <span id="info-puntos">Puntos: 0</span>
             </div>
-            <div id="hint-box">
-                <p id="hint-text"></p>
+            <div class="stage">
+                <img id="character-image" src="" alt="Personaje a adivinar">
+                <div id="cover-grid"></div>
+            </div>
+            <div id="word-constructor">
+                <div id="current-word-display"></div>
+                <div id="letter-wheel">
+                    <svg id="line-canvas"></svg>
+                </div>
+            </div>
+            <div id="bottom-bar">
+                <div id="host">
+                    <img src="https://i.postimg.cc/DZBbQpH7/host.png" alt="Host">
+                </div>
+                <div id="hint-box">
+                    <p id="hint-text"></p>
+                </div>
             </div>
         </div>
         
-        <div id="end-game-screen">
+        <!-- Pantalla de Fin de Juego -->
+        <div id="end-game-screen" class="screen">
             <h2>¡Juego Terminado!</h2>
             <p id="final-score"></p>
-            <button id="restart-button">Jugar de Nuevo</button>
+            <!-- --- BOTONES MODIFICADOS Y AÑADIDOS --- -->
+            <div class="end-game-buttons">
+                <button id="back-to-start-button" class="end-game-btn">Volver al Jugar</button>
+                <a href="./" id="restart-button" class="end-game-btn">Volver a inicio</a>
+            </div>
+             <!-- --- FIN DE CAMBIOS HTML --- -->
         </div>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            
+            // Función para extraer user_id de la URL
+            const getUserId = () => {
+                const urlParams = new URLSearchParams(window.location.search);
+                const userId = urlParams.get('user_id');
+                return userId ? userId : null;
+            };
+
             const gameRounds = [
                 { image: 'https://www.nintendo.com/eu/media/images/10_share_images/portals_3/2x1_SuperMarioHub_image1600w.jpg', answers: ['mario'], hint: 'Es un fontanero italiano que rescata princesas.' },
                 { image: 'https://external-preview.redd.it/AE6Jw9dqaSdzrz_ZWl_IrwwSd5ViFyiA_sKMELQ9YPs.png?width=640&crop=smart&auto=webp&s=0dc0fb614f688336c3b6553d867b0fbc413575d4', answers: ['pikachu'], hint: 'Es un ratón eléctrico amarillo, ¡muy famoso!' },
                 { image: 'https://media.revistagq.com/photos/5ca5f6a77a3aec0df5496c59/4:3/w_1960,h_1470,c_limit/bob_esponja_9564.png', answers: ['bobesponja'], hint: 'Vive en una piña debajo del mar.' }
             ];
 
+            // Variables de estado del juego
             let currentRound = 0, score = 0, correctAnswersCount = 0;
             let timer = 50, timerInterval, tiles = [];
             
+            // Variables para registrar la duración
+            let gameStartTime = null;
+            let gameEndTime = null;
+
+            // Referencias a elementos del DOM
+            const instructionsScreenEl = document.getElementById('instructions-screen');
+            const gameScreenEl = document.getElementById('game-screen');
+            const startButtonEl = document.getElementById('startButton');
             const infoTiempoEl = document.getElementById('info-tiempo'), infoPuntosEl = document.getElementById('info-puntos');
             const characterImageEl = document.getElementById('character-image'), coverGridEl = document.getElementById('cover-grid');
             const endGameScreenEl = document.getElementById('end-game-screen'), finalScoreEl = document.getElementById('final-score');
             const restartButtonEl = document.getElementById('restart-button');
-            
             const wordConstructorEl = document.getElementById('word-constructor');
             const letterWheelEl = document.getElementById('letter-wheel');
             const wordDisplayEl = document.getElementById('current-word-display');
-            
-            // CAMBIO: La referencia ahora es al texto dentro del nuevo panel de consejos
             const hintTextEl = document.getElementById('hint-text');
+            // NUEVO: Referencias a elementos del Countdown
+            const countdownOverlayEl = document.getElementById('countdown-overlay');
+            const countdownTextEl = document.getElementById('countdown-text');
+            
+            const backToStartButtonEl = document.getElementById('back-to-start-button');
             
             let isDrawing = false;
             let selectedNodes = [];
             let lineEl = null;
             
+            function showScreen(screenElement) {
+                document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+                screenElement.classList.add('active');
+            }
+
+            // NUEVO: Función para iniciar el contador regresivo
+            function startCountdown() {
+                showScreen(countdownOverlayEl); // Muestra la pantalla del contador
+                countdownTextEl.textContent = ''; // Limpia cualquier texto previo
+                
+                let count = 3;
+                const countdownMessages = ['3', '2', '1', '¡A adivinar!'];
+
+                const countdownInterval = setInterval(() => {
+                    if (count >= 0) { // Incluye el 0 para el mensaje "¡A adivinar!"
+                        countdownTextEl.textContent = countdownMessages[3 - count];
+                        // Aplica la animación para cada número/frase
+                        countdownTextEl.style.animation = 'none'; // Resetea la animación
+                        void countdownTextEl.offsetWidth; // Fuerza un reflow para reiniciar la animación
+                        countdownTextEl.style.animation = 'countdownBounce 0.6s ease-out';
+                        count--;
+                    } else {
+                        clearInterval(countdownInterval); // Detiene el contador
+                        countdownOverlayEl.classList.remove('active'); // Oculta la pantalla del contador
+                        showScreen(gameScreenEl); // Muestra la pantalla del juego
+                        startGame(); // Inicia la lógica del juego
+                    }
+                }, 1000); // Actualiza cada segundo
+            }
+
             function startGame() {
-                currentRound = 0, score = 0, correctAnswersCount = 0;
+                // Reinicia estado del juego
+                currentRound = 0;
+                score = 0;
+                correctAnswersCount = 0;
+                
+                // Registra el tiempo de inicio
+                gameStartTime = Date.now(); 
+                gameEndTime = null;
+
                 updateScore(0);
-                endGameScreenEl.classList.remove('visible');
                 loadRound(currentRound);
             }
 
             function loadRound(roundIndex) {
-                if (roundIndex >= gameRounds.length) { endGame(); return; }
+                if (roundIndex >= gameRounds.length) {
+                    endGame(); // Finaliza el juego si no hay más rondas
+                    return;
+                }
                 resetRound();
                 const roundData = gameRounds[roundIndex];
                 characterImageEl.src = roundData.image;
@@ -228,171 +311,23 @@
                 showHostMessage(roundData.hint);
             }
 
-            function setupLetterWheel(answer) {
-                letterWheelEl.innerHTML = '<svg id="line-canvas"></svg>';
-                const letters = answer.replace(/\s/g, '').toUpperCase().split('');
-                for (let i = letters.length - 1; i > 0; i--) {
-                    const j = Math.floor(Math.random() * (i + 1));
-                    [letters[i], letters[j]] = [letters[j], letters[i]];
-                }
-
-                const radius = 95;
-                const centerX = letterWheelEl.offsetWidth / 2;
-                const centerY = letterWheelEl.offsetHeight / 2;
-                const angleStep = (2 * Math.PI) / letters.length;
-
-                letters.forEach((letter, i) => {
-                    const angle = i * angleStep;
-                    const x = centerX + radius * Math.cos(angle) - 22.5;
-                    const y = centerY + radius * Math.sin(angle) - 22.5;
-
-                    const node = document.createElement('div');
-                    node.classList.add('letter-node');
-                    node.textContent = letter;
-                    node.dataset.letter = letter;
-                    node.style.left = `${x}px`;
-                    node.style.top = `${y}px`;
-                    letterWheelEl.appendChild(node);
-                });
-            }
-
-            function startDraw(e) {
-                const node = e.target.closest('.letter-node');
-                if (!node) return;
-                
-                resetWordAttempt();
-                isDrawing = true;
-
-                selectedNodes.push(node);
-                node.classList.add('selected');
-                updateWordDisplay();
-
-                lineEl = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
-                lineEl.setAttribute('fill', 'none');
-                lineEl.setAttribute('stroke', 'var(--color-naranja)');
-                lineEl.setAttribute('stroke-width', '5');
-                lineEl.setAttribute('stroke-linecap', 'round');
-                lineEl.setAttribute('stroke-linejoin', 'round');
-                letterWheelEl.querySelector('#line-canvas').appendChild(lineEl);
-                
-                const point = getEventPosition(node);
-                lineEl.setAttribute('points', `${point.x},${point.y}`);
-            }
-
-            function draw(e) {
-                if (!isDrawing) return;
-                e.preventDefault();
-
-                let pointsString = selectedNodes.map(node => {
-                    const pos = getEventPosition(node);
-                    return `${pos.x},${pos.y}`;
-                }).join(' ');
-
-                const cursorPoint = getCursorPosition(e, letterWheelEl);
-                lineEl.setAttribute('points', `${pointsString} ${cursorPoint.x},${cursorPoint.y}`);
-
-                const clientX = e.clientX || e.touches[0].clientX;
-                const clientY = e.clientY || e.touches[0].clientY;
-                const currentNode = document.elementFromPoint(clientX, clientY);
-
-                if (currentNode && currentNode.classList.contains('letter-node') && !selectedNodes.includes(currentNode)) {
-                    selectedNodes.push(currentNode);
-                    currentNode.classList.add('selected');
-                    updateWordDisplay();
-                }
-            }
-            
-            // CAMBIO: endDraw vuelve a ejecutar la comprobación de la respuesta
-            function endDraw() {
-                if (!isDrawing) return;
-                isDrawing = false;
-                
-                const finalPoints = selectedNodes.map(node => {
-                    const pos = getEventPosition(node);
-                    return `${pos.x},${pos.y}`;
-                }).join(' ');
-                
-                if (lineEl) lineEl.setAttribute('points', finalPoints);
-                
-                const userAnswer = selectedNodes.map(node => node.dataset.letter).join('');
-                if (userAnswer) {
-                    checkAnswer(userAnswer);
-                }
-            }
-            
-            function updateWordDisplay() {
-                wordDisplayEl.textContent = selectedNodes.map(node => node.dataset.letter).join('');
-            }
-            
-            function resetWordAttempt() {
-                selectedNodes.forEach(node => node.classList.remove('selected'));
-                selectedNodes = [];
-                updateWordDisplay();
-                const canvas = letterWheelEl.querySelector('#line-canvas');
-                if(canvas) canvas.innerHTML = '';
-                lineEl = null;
-            }
-            
-            function getCursorPosition(e, relativeTo) {
-                const rect = relativeTo.getBoundingClientRect();
-                const clientX = e.clientX || e.touches[0].clientX;
-                const clientY = e.clientY || e.touches[0].clientY;
-                return { x: clientX - rect.left, y: clientY - rect.top };
-            }
-
-            function getEventPosition(node) {
-                 return {
-                    x: node.offsetLeft + node.offsetWidth / 2,
-                    y: node.offsetTop + node.offsetHeight / 2
-                };
-            }
-            
-            function createCoverGrid() {
-                coverGridEl.innerHTML = ''; tiles = [];
-                for (let i = 0; i < 80; i++) {
-                    const tile = document.createElement('div');
-                    tile.classList.add('cover-tile');
-                    coverGridEl.appendChild(tile); tiles.push(tile);
-                }
-            }
-            
-            // CAMBIO: showHostMessage ahora es más simple, solo actualiza el texto del panel.
-            function showHostMessage(message) {
-                hintTextEl.textContent = message;
-            }
-
-            function revealAllTiles() { tiles.forEach(t => t.classList.add('revealed')); tiles = []; }
-
-            function startRoundTimer() {
-                timer = 50; infoTiempoEl.textContent = `Tiempo: ${timer}`;
-                timerInterval = setInterval(() => {
-                    timer--;
-                    infoTiempoEl.textContent = `Tiempo: ${timer}`;
-                    if (tiles.length > 0) revealRandomTile();
-                    if (timer <= 0) {
-                        clearInterval(timerInterval);
-                        revealAllTiles();
-                        const correctAnswer = gameRounds[currentRound].answers[0].toUpperCase();
-                        showHostMessage(`¡Tiempo! Era ${correctAnswer}.`);
-                        setTimeout(() => { currentRound++; loadRound(currentRound); }, 3000);
-                    }
-                }, 1000);
-            }
-            
             function checkAnswer(userAnswer) {
                 if (!userAnswer) return;
                 const { answers, hint } = gameRounds[currentRound];
                 const normalizedAnswers = answers.map(a => a.replace(/\s/g, '').toLowerCase());
                 
                 if (normalizedAnswers.includes(userAnswer.toLowerCase())) {
-                    clearInterval(timerInterval); 
-                    updateScore(timer); 
-                    correctAnswersCount++; 
+                    clearInterval(timerInterval);
+                    updateScore(timer);
+                    correctAnswersCount++;
                     revealAllTiles();
                     showHostMessage(`¡Correcto! Es ${answers[0]}. ¡Genial!`);
-                    setTimeout(() => { currentRound++; loadRound(currentRound); }, 2500);
+                    setTimeout(() => {
+                        currentRound++;
+                        loadRound(currentRound);
+                    }, 2500);
                 } else {
-                    showHostMessage(`Nop... ${hint}`); // Muestra la pista de nuevo al fallar
+                    showHostMessage(`Nop... ${hint}`);
                     wordConstructorEl.classList.add('shake');
                     setTimeout(() => {
                         wordConstructorEl.classList.remove('shake');
@@ -403,38 +338,163 @@
 
             function endGame() {
                 clearInterval(timerInterval);
+                
+                // Registra el tiempo de finalización
+                gameEndTime = Date.now();
+
                 const totalRounds = gameRounds.length;
                 const percentage = totalRounds > 0 ? (correctAnswersCount / totalRounds) * 100 : 0;
+                
                 finalScoreEl.innerHTML = `Puntuación: ${score} <br> Acertaste ${correctAnswersCount} de ${totalRounds} (${percentage.toFixed(0)}%)`;
-                endGameScreenEl.classList.add('visible');
+                
+                showScreen(endGameScreenEl);
+                
+                // Llama a la función para recopilar y mostrar los datos en consola
+                logGameStats();
             }
 
+            // --- INICIO: LÓGICA DE RECOPILACIÓN DE DATOS ---
+
+            function calculateNormalizedScore() {
+                const totalRounds = gameRounds.length;
+                const maxScorePerRound = 50; 
+                const maxPossibleScore = totalRounds * maxScorePerRound;
+                if (maxPossibleScore === 0) return 0;
+                const normalized = Math.round((score / maxPossibleScore) * 100);
+                return Math.min(100, Math.max(0, normalized));
+            }
+
+            function logGameStats() {
+                const totalDurationSeconds = gameEndTime && gameStartTime ? Math.round((gameEndTime - gameStartTime) / 1000) : 0;
+                const normalizedScore = calculateNormalizedScore();
+                
+                // Crea el objeto JSON con todos los datos del juego
+                const gameStats = {
+                    userId: getUserId() || "No especificado",
+                    gameId: 2, // ID para "Adivina el Personaje"
+                    scoreRaw: score,
+                    scoreNormalized: normalizedScore, // Puntaje en escala 0-100
+                    correctAnswers: correctAnswersCount,
+                    totalChallenges: gameRounds.length,
+                    timeSpentSeconds: totalDurationSeconds,
+                    gameCompleted: true
+                };
+                
+                // Muestra el objeto JSON en la consola del navegador
+                console.log("--- Resumen de la Partida ---");
+                console.log("Datos del juego en formato JSON:");
+                console.log(JSON.stringify(gameStats, null, 2)); // El `null, 2` lo formatea para que sea legible
+            }
+            
+            // --- FIN: LÓGICA DE RECOPILACIÓN ---
+
+            // --- Funciones de utilidad del juego (sin cambios) ---
             function resetRound() {
                 clearInterval(timerInterval); 
-                showHostMessage(""); // Limpia el panel de consejos
+                showHostMessage("");
                 resetWordAttempt();
                 createCoverGrid();
             }
-
-            function revealRandomTile() {
-                const unrevealed = tiles.filter(t => !t.classList.contains('revealed'));
-                if (unrevealed.length === 0) return;
-                unrevealed[Math.floor(Math.random() * unrevealed.length)].classList.add('revealed');
+            function setupLetterWheel(answer) {
+                letterWheelEl.innerHTML = '<svg id="line-canvas"></svg>';
+                const letters = answer.replace(/\s/g, '').toUpperCase().split('');
+                for (let i = letters.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [letters[i], letters[j]] = [letters[j], letters[i]]; }
+                const radius = 95, centerX = letterWheelEl.offsetWidth / 2, centerY = letterWheelEl.offsetHeight / 2, angleStep = (2 * Math.PI) / letters.length;
+                letters.forEach((letter, i) => {
+                    const angle = i * angleStep, x = centerX + radius * Math.cos(angle) - 22.5, y = centerY + radius * Math.sin(angle) - 22.5;
+                    const node = document.createElement('div');
+                    node.classList.add('letter-node'); node.textContent = letter; node.dataset.letter = letter;
+                    node.style.left = `${x}px`; node.style.top = `${y}px`;
+                    letterWheelEl.appendChild(node);
+                });
             }
-            
+            function startDraw(e) {
+                const node = e.target.closest('.letter-node'); if (!node) return;
+                resetWordAttempt(); isDrawing = true; selectedNodes.push(node); node.classList.add('selected'); updateWordDisplay();
+                let canvas = letterWheelEl.querySelector('#line-canvas');
+                if (!canvas) { canvas = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); canvas.id = 'line-canvas'; letterWheelEl.appendChild(canvas); }
+                lineEl = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
+                lineEl.setAttribute('fill', 'none'); lineEl.setAttribute('stroke', 'var(--color-naranja)'); lineEl.setAttribute('stroke-width', '5');
+                lineEl.setAttribute('stroke-linecap', 'round'); lineEl.setAttribute('stroke-linejoin', 'round');
+                canvas.appendChild(lineEl); const point = getEventPosition(node); lineEl.setAttribute('points', `${point.x},${point.y}`);
+            }
+            function draw(e) {
+                if (!isDrawing) return; e.preventDefault();
+                let pointsString = selectedNodes.map(node => { const pos = getEventPosition(node); return `${pos.x},${pos.y}`; }).join(' ');
+                const cursorPoint = getCursorPosition(e, letterWheelEl); if (lineEl) lineEl.setAttribute('points', `${pointsString} ${cursorPoint.x},${cursorPoint.y}`);
+                const clientX = e.clientX || (e.touches && e.touches[0] ? e.touches[0].clientX : 0);
+                const clientY = e.clientY || (e.touches && e.touches[0] ? e.touches[0].clientY : 0);
+                const currentNode = document.elementFromPoint(clientX, clientY);
+                if (currentNode && currentNode.classList.contains('letter-node') && !selectedNodes.includes(currentNode)) { selectedNodes.push(currentNode); currentNode.classList.add('selected'); updateWordDisplay(); }
+            }
+            function endDraw() {
+                if (!isDrawing) return; isDrawing = false;
+                const finalPoints = selectedNodes.map(node => { const pos = getEventPosition(node); return `${pos.x},${pos.y}`; }).join(' ');
+                if (lineEl) lineEl.setAttribute('points', finalPoints);
+                const userAnswer = selectedNodes.map(node => node.dataset.letter).join('');
+                if (userAnswer) checkAnswer(userAnswer);
+            }
+            function updateWordDisplay() { wordDisplayEl.textContent = selectedNodes.map(node => node.dataset.letter).join(''); }
+            function resetWordAttempt() {
+                selectedNodes.forEach(node => node.classList.remove('selected')); selectedNodes = []; updateWordDisplay();
+                const canvas = letterWheelEl.querySelector('#line-canvas'); if(canvas) canvas.innerHTML = ''; lineEl = null;
+            }
+            function getCursorPosition(e, relativeTo) {
+                const rect = relativeTo.getBoundingClientRect();
+                const clientX = e.clientX || (e.touches && e.touches[0] ? e.touches[0].clientX : 0);
+                const clientY = e.clientY || (e.touches && e.touches[0] ? e.touches[0].clientY : 0);
+                return { x: clientX - rect.left, y: clientY - rect.top };
+            }
+            function getEventPosition(node) { return { x: node.offsetLeft + node.offsetWidth / 2, y: node.offsetTop + node.offsetHeight / 2 }; }
+            function createCoverGrid() {
+                coverGridEl.innerHTML = ''; tiles = [];
+                for (let i = 0; i < 80; i++) { const tile = document.createElement('div'); tile.classList.add('cover-tile'); coverGridEl.appendChild(tile); tiles.push(tile); }
+            }
+            function showHostMessage(message) { hintTextEl.textContent = message; }
+            function revealAllTiles() { tiles.forEach(t => t.classList.add('revealed')); tiles = []; }
+            function startRoundTimer() {
+                timer = 50; infoTiempoEl.textContent = `Tiempo: ${timer}`;
+                timerInterval = setInterval(() => {
+                    timer--; infoTiempoEl.textContent = `Tiempo: ${timer}`;
+                    if (tiles.length > 0) revealRandomTile();
+                    if (timer <= 0) {
+                        clearInterval(timerInterval); revealAllTiles();
+                        const correctAnswer = gameRounds[currentRound].answers[0].toUpperCase();
+                        showHostMessage(`¡Tiempo! Era ${correctAnswer}.`);
+                        setTimeout(() => { currentRound++; loadRound(currentRound); }, 3000);
+                    }
+                }, 1000);
+            }
+            function revealRandomTile() {
+                const unrevealed = tiles.filter(t => !t.classList.contains('revealed')); if (unrevealed.length === 0) return;
+                const randomIndex = Math.floor(Math.random() * unrevealed.length); unrevealed[randomIndex].classList.add('revealed');
+            }
             function updateScore(pointsToAdd) { score += pointsToAdd; infoPuntosEl.textContent = `Puntos: ${score}`; }
             
+            // Event Listeners
             letterWheelEl.addEventListener('mousedown', startDraw);
             document.addEventListener('mousemove', draw);
             document.addEventListener('mouseup', endDraw);
-            
             letterWheelEl.addEventListener('touchstart', startDraw, { passive: false });
             document.addEventListener('touchmove', draw, { passive: false });
             document.addEventListener('touchend', endDraw);
+            
+            // MODIFICADO: startButton ahora llama a startCountdown()
+            startButtonEl.addEventListener('click', () => { 
+                startCountdown(); // Inicia el contador regresivo
+            });
+            
+            // --- EVENT LISTENERS MODIFICADOS Y AÑADIDOS ---
+            restartButtonEl.addEventListener('click', () => { 
+                startCountdown(); // Al reiniciar, también se inicia el contador
+            });
+            backToStartButtonEl.addEventListener('click', () => {
+                showScreen(instructionsScreenEl);
+            });
+            // --- FIN DE CAMBIOS EN EVENT LISTENERS ---
 
-            restartButtonEl.addEventListener('click', startGame);
-
-            startGame();
+            // Iniciar el juego mostrando la pantalla de instrucciones
+            showScreen(instructionsScreenEl);
         });
     </script>
 </body>
